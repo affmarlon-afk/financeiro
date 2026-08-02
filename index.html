@@ -1,0 +1,2148 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="Cadê Meu Dinheiro?">
+<title>Cadê Meu Dinheiro, Marlon?</title>
+<style>
+/* system fonts - no external dependency */
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#F2F2F7;--white:#FFF;--black:#000;
+  --g1:#1C1C1E;--g2:#2C2C2E;--g3:#3A3A3C;--g4:#48484A;
+  --g5:#636366;--g6:#8E8E93;--g7:#AEAEB2;--g8:#C7C7CC;--g9:#D1D1D6;--g10:#E5E5EA;--g11:#F2F2F7;
+  --green:#34C759;--greenl:#E8F8ED;
+  --amber:#FF9500;--amberl:#FFF4E6;
+  --red:#FF3B30;--redl:#FFF0EF;
+  --blue:#007AFF;--bluel:#EBF4FF;
+  --purple:#AF52DE;--purplel:#F5EDFF;
+  --teal:#30B0C7;--teall:#E6F7FA;
+  --sans:-apple-system,BlinkMacSystemFont,'SF Pro Display','Helvetica Neue',Arial,sans-serif;--sb:env(safe-area-inset-bottom,20px);
+}
+/* SAVINGS */
+.sav-hero{margin:12px 16px 10px;background:var(--g1);border-radius:22px;padding:20px 22px 16px;color:#fff}
+.sav-hero-lbl{font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:6px}
+.sav-hero-val{font-size:40px;font-weight:900;letter-spacing:-1.5px;color:#30B0C7;line-height:1;margin-bottom:3px}
+.sav-hero-sub{font-size:13px;color:rgba(255,255,255,.4);font-weight:500}
+.sav-prog-wrap{margin-top:14px}
+.sav-prog-hdr{display:flex;justify-content:space-between;margin-bottom:5px}
+.sav-prog-lbl{font-size:11px;font-weight:600;color:rgba(255,255,255,.45)}
+.sav-prog-pct{font-size:11px;font-weight:800;color:#30B0C7}
+.sav-prog-track{height:5px;background:rgba(255,255,255,.1);border-radius:99px;overflow:hidden}
+.sav-prog-fill{height:100%;background:#30B0C7;border-radius:99px;transition:width .6s}
+.goal-card{background:var(--white);border-radius:16px;padding:16px;margin-bottom:10px}
+.goal-hdr{display:flex;align-items:flex-start;margin-bottom:10px;gap:10px}
+.goal-ico{font-size:24px;flex-shrink:0;margin-top:1px}
+.goal-hdr-info{flex:1;min-width:0}
+.goal-name{font-size:15px;font-weight:800;color:var(--black)}
+.goal-sub{font-size:12px;color:var(--g6);font-weight:500;margin-top:1px}
+.goal-actions{display:flex;gap:6px;flex-shrink:0}
+.goal-btn{width:30px;height:30px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:14px;cursor:pointer;border:none;font-family:var(--sans)}
+.goal-btn-dep{background:#E5F7FA;color:#30B0C7}
+.goal-btn-del{background:var(--redl);color:var(--red)}
+.goal-prow{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
+.goal-cur{font-size:20px;font-weight:900;color:var(--black)}
+.goal-target{font-size:13px;font-weight:600;color:var(--g6)}
+.goal-track{height:7px;background:var(--g10);border-radius:99px;overflow:hidden;margin-bottom:5px}
+.goal-fill{height:100%;background:#30B0C7;border-radius:99px;transition:width .6s}
+.goal-pct{font-size:11px;font-weight:700;color:var(--g6)}
+.dep-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--g11)}
+.dep-row:last-child{border-bottom:none}
+.dep-ico{width:32px;height:32px;border-radius:9px;background:#E5F7FA;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.dep-info{flex:1}
+.dep-name{font-size:13px;font-weight:600;color:var(--black)}
+.dep-date{font-size:11px;color:var(--g6);margin-top:1px}
+.dep-amt{font-size:14px;font-weight:800;color:#30B0C7}
+/* BILL STATUS */
+.bill-card{background:var(--white);border-radius:16px;margin-bottom:10px;overflow:hidden}
+.bill-card-hdr{display:flex;align-items:center;gap:12px;padding:14px 16px}
+.bill-status-bar{height:4px;width:100%}
+.bill-status-bar.paid{background:var(--green)}
+.bill-status-bar.overdue{background:var(--red)}
+.bill-status-bar.soon{background:var(--amber)}
+.bill-status-bar.scheduled{background:var(--blue)}
+.bill-status-bar.pending{background:var(--g9)}
+.bill-ico{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.bill-info{flex:1;min-width:0}
+.bill-name{font-size:15px;font-weight:700;color:var(--black)}
+.bill-meta{font-size:11px;color:var(--g6);margin-top:2px;font-weight:500}
+.bill-right{text-align:right;flex-shrink:0}
+.bill-val{font-size:16px;font-weight:900;color:var(--black)}
+.bill-val-real{font-size:12px;font-weight:600;margin-top:1px}
+.bill-badge{display:inline-block;font-size:10px;font-weight:800;padding:3px 8px;border-radius:99px;text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px}
+.bill-badge.paid{background:var(--greenl);color:var(--green)}
+.bill-badge.overdue{background:var(--redl);color:var(--red)}
+.bill-badge.soon{background:var(--amberl);color:var(--amber)}
+.bill-badge.scheduled{background:var(--bluel);color:var(--blue)}
+.bill-badge.pending{background:var(--g11);color:var(--g5)}
+.bill-actions{display:flex;gap:8px;padding:0 16px 14px}
+.bill-act-btn{flex:1;height:36px;border:none;border-radius:10px;font-family:var(--sans);font-size:12px;font-weight:800;cursor:pointer;transition:opacity .15s}
+.bill-act-btn:active{opacity:.8}
+.bill-act-pay{background:var(--green);color:#fff}
+.bill-act-sched{background:var(--bluel);color:var(--blue)}
+.bill-act-unpay{background:var(--g11);color:var(--g5)}
+.bill-paid-info{padding:0 16px 13px;font-size:12px;color:var(--g6);font-weight:500;border-top:1px solid var(--g11);padding-top:10px;margin-top:0}
+.diff-warn{font-size:11px;font-weight:700;padding:2px 7px;border-radius:6px;display:inline-block;margin-left:6px}
+.diff-warn.over{background:var(--redl);color:var(--red)}
+.diff-warn.under{background:var(--greenl);color:var(--green)}
+/* VOICE */
+.fab-voice{background:#FF3B30;color:#fff}
+@keyframes vPulse{0%,100%{transform:scale(1);box-shadow:0 0 0 0 rgba(255,59,48,.4)}50%{transform:scale(1.08);box-shadow:0 0 0 12px rgba(255,59,48,0)}}
+body{font-family:var(--sans);background:var(--bg);color:var(--black);min-height:100dvh;max-width:430px;margin:0 auto;-webkit-font-smoothing:antialiased}
+
+/* INSTALL */
+#ib{background:var(--g1);color:#fff;padding:14px 16px;display:none;align-items:flex-start;gap:10px;position:sticky;top:0;z-index:999}
+#ib.on{display:flex}
+.ib-t{flex:1;font-size:13px;line-height:1.5;font-weight:500}
+.ib-t b{display:block;font-weight:800;margin-bottom:2px}
+
+/* SCREENS */
+.pg{display:none;flex-direction:column;min-height:100dvh;padding-bottom:calc(70px + var(--sb))}
+.pg.on{display:flex}
+
+/* HEADER */
+.hdr{padding:54px 20px 10px}
+.hdr-row{display:flex;align-items:flex-end;justify-content:space-between}
+.hdr-eyebrow{font-size:13px;font-weight:500;color:var(--g6);margin-bottom:2px}
+.hdr-title{font-size:30px;font-weight:900;letter-spacing:-.8px;color:var(--black);line-height:1}
+.month-pill{background:var(--g1);color:#fff;border-radius:99px;padding:5px 12px;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:5px}
+
+/* SUMMARY CARD (Buddy-style dark) */
+.sum-card{margin:12px 16px 10px;background:var(--g1);border-radius:22px;padding:20px 20px 16px;color:#fff;position:relative;overflow:hidden}
+.sum-card::before{content:'';position:absolute;top:-50px;right:-30px;width:150px;height:150px;border-radius:50%;background:rgba(255,255,255,.03)}
+.sc-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px}
+.sc-lbl{font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:rgba(255,255,255,.45)}
+.sc-badge{font-size:11px;font-weight:800;padding:4px 10px;border-radius:99px}
+.sc-badge.ok{background:rgba(52,199,89,.2);color:#34C759}
+.sc-badge.warn{background:rgba(255,149,0,.2);color:#FF9500}
+.sc-badge.bad{background:rgba(255,59,48,.2);color:#FF3B30}
+.sc-val{font-size:42px;font-weight:900;letter-spacing:-2px;line-height:1;margin-bottom:3px}
+.sc-val.ok{color:#34C759}.sc-val.warn{color:#FF9500}.sc-val.bad{color:#FF3B30}
+.sc-sub{font-size:13px;color:rgba(255,255,255,.4);font-weight:500;margin-bottom:16px}
+.sc-divider{height:1px;background:rgba(255,255,255,.08);margin-bottom:14px}
+.sc-stats{display:flex;gap:0}
+.sc-stat{flex:1;padding:0 4px}
+.sc-stat:not(:last-child){border-right:1px solid rgba(255,255,255,.08);margin-right:4px}
+.sc-stat-lbl{font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:4px}
+.sc-stat-val{font-size:15px;font-weight:800;color:#fff}
+.sc-stat-val.green{color:#34C759}.sc-stat-val.amber{color:#FF9500}.sc-stat-val.red{color:#FF3B30}
+
+/* PROG */
+.prog-wrap{margin:0 16px 10px}
+.prog-hdr{display:flex;justify-content:space-between;margin-bottom:6px}
+.prog-lbl{font-size:12px;font-weight:600;color:var(--g6)}
+.prog-pct{font-size:12px;font-weight:800;color:var(--black)}
+.prog-track{height:5px;background:var(--g10);border-radius:99px;overflow:hidden}
+.prog-fill{height:100%;border-radius:99px;transition:width .6s}
+.prog-fill.ok{background:var(--green)}.prog-fill.warn{background:var(--amber)}.prog-fill.bad{background:var(--red)}
+
+/* ALERT */
+.alert{margin:0 16px 10px;padding:12px 14px;border-radius:14px;font-size:13px;font-weight:500;display:none;align-items:flex-start;gap:9px;line-height:1.4}
+.alert.on{display:flex}
+.alert.info{background:var(--bluel);color:var(--blue)}
+.alert.warn{background:var(--amberl);color:var(--amber)}
+.alert.bad{background:var(--redl);color:var(--red)}
+
+/* DAY ROW */
+.day-row{display:flex;gap:8px;margin:0 16px 10px}
+.day-card{flex:1;background:var(--white);border-radius:16px;padding:13px 14px;border:none}
+.dc-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--g6);margin-bottom:5px}
+.dc-val{font-size:20px;font-weight:900;letter-spacing:-.5px;margin-bottom:2px}
+.dc-val.ok{color:var(--green)}.dc-val.warn{color:var(--amber)}.dc-val.bad{color:var(--red)}.dc-val.blue{color:var(--blue)}.dc-val.purple{color:var(--purple)}
+.dc-sub{font-size:11px;color:var(--g7);font-weight:500}
+
+/* WEEK BARS */
+.wbars{display:flex;gap:5px;padding:0 16px;margin-bottom:10px;align-items:flex-end}
+.wbar{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px}
+.wbar-track{width:100%;height:52px;border-radius:8px;background:var(--g10);display:flex;align-items:flex-end;overflow:hidden}
+.wbar-fill{width:100%;border-radius:8px;transition:height .5s}
+.wbar-fill.ok{background:var(--g3)}.wbar-fill.warn{background:var(--amber)}.wbar-fill.bad{background:var(--red)}
+.wbar.today .wbar-fill.ok{background:var(--green)}
+.wbar-lbl{font-size:10px;font-weight:700;color:var(--g7)}
+.wbar.today .wbar-lbl{color:var(--black);font-weight:900}
+.wbar-amt{font-size:8px;color:var(--g7);font-weight:600}
+
+/* QUICK */
+.qstrip{display:flex;gap:8px;padding:0 16px;margin-bottom:10px;overflow-x:auto;scrollbar-width:none}
+.qstrip::-webkit-scrollbar{display:none}
+.qbtn{flex-shrink:0;background:var(--white);border-radius:14px;padding:10px 12px;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;min-width:60px;border:none;transition:transform .12s}
+.qbtn:active{transform:scale(.92)}
+.qico{font-size:20px}
+.qlbl{font-size:9px;font-weight:700;color:var(--g5);text-transform:uppercase;letter-spacing:.04em}
+
+/* SECTION */
+.sec{padding:0 16px;margin-bottom:18px}
+.sec-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.sec-title{font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--g6)}
+.sec-link{font-size:13px;font-weight:700;color:var(--blue);cursor:pointer}
+
+/* CARD LIST */
+.clist{background:var(--white);border-radius:16px;overflow:hidden}
+
+/* EXP ROW */
+.erow{display:flex;align-items:center;gap:12px;padding:13px 16px;border-bottom:1px solid var(--g11)}
+.erow:last-child{border-bottom:none}
+.eico{width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
+.eico.pix{background:var(--greenl)}.eico.credit{background:var(--bluel)}.eico.food{background:var(--purplel)}.eico.cash{background:var(--g11)}
+.einfo{flex:1;min-width:0}
+.ename{font-size:14px;font-weight:600;color:var(--black);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.emeta{font-size:11px;color:var(--g6);margin-top:1px;font-weight:500;display:flex;align-items:center;gap:5px}
+.pay-tag{display:inline-block;font-size:9px;font-weight:800;padding:1px 6px;border-radius:4px;text-transform:uppercase;letter-spacing:.04em}
+.pay-tag.pix{background:var(--greenl);color:var(--green)}
+.pay-tag.credit{background:var(--bluel);color:var(--blue)}
+.pay-tag.food{background:var(--purplel);color:var(--purple)}
+.pay-tag.cash{background:var(--g11);color:var(--g5)}
+.eamt{font-size:15px;font-weight:800;color:var(--black);flex-shrink:0}
+
+/* EMPTY */
+.empty{text-align:center;padding:28px 16px;color:var(--g6)}
+.empty-ico{font-size:32px;margin-bottom:8px}
+.empty-t{font-size:13px;font-weight:500;line-height:1.5}
+
+/* DEBT */
+.drow{display:flex;align-items:center;gap:12px;padding:13px 16px;border-bottom:1px solid var(--g11)}
+.drow:last-child{border-bottom:none}
+.dico{width:38px;height:38px;border-radius:12px;background:var(--redl);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
+.dinfo{flex:1;min-width:0}
+.dname{font-size:14px;font-weight:700;color:var(--black)}
+.dsub{font-size:11px;color:var(--g6);margin-top:1px;font-weight:500}
+.dbar{height:3px;background:var(--g10);border-radius:99px;overflow:hidden;margin-top:5px}
+.dbarf{height:100%;background:var(--red);border-radius:99px}
+.dright{text-align:right;flex-shrink:0}
+.dparc{font-size:15px;font-weight:900;color:var(--red)}
+.dpct{font-size:10px;color:var(--g6);font-weight:600;margin-top:2px}
+
+/* ANALYSIS */
+.arow{display:flex;align-items:center;gap:12px;padding:13px 16px;border-bottom:1px solid var(--g11)}
+.arow:last-child{border-bottom:none}
+.a-ring{width:38px;height:38px;flex-shrink:0;position:relative;display:flex;align-items:center;justify-content:center}
+.a-ring svg{position:absolute;top:0;left:0;transform:rotate(-90deg)}
+.a-ring-lbl{font-size:10px;font-weight:800;color:var(--black);position:relative;z-index:1}
+.ainfo{flex:1;min-width:0}
+.aname{font-size:14px;font-weight:700;color:var(--black)}
+.abar{height:3px;background:var(--g10);border-radius:99px;overflow:hidden;margin-top:5px}
+.abarf{height:100%;background:var(--g3);border-radius:99px}
+.aright{text-align:right;flex-shrink:0}
+.aamt{font-size:14px;font-weight:800;color:var(--black)}
+.apct{font-size:10px;color:var(--g6);font-weight:600;margin-top:2px}
+
+/* NAV */
+.nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:rgba(242,242,247,.95);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-top:1px solid var(--g10);display:flex;padding-bottom:var(--sb);z-index:100}
+.nit{flex:1;display:flex;flex-direction:column;align-items:center;padding:10px 0 5px;cursor:pointer;gap:3px}
+.nic{font-size:21px;transition:transform .15s}
+.nlb{font-size:9px;font-weight:700;color:var(--g7);text-transform:uppercase;letter-spacing:.05em}
+.nit.on .nic{transform:scale(1.1)}
+.nit.on .nlb{color:var(--black)}
+
+/* FABS */
+.fabs{position:fixed;bottom:calc(62px + var(--sb));right:16px;display:flex;flex-direction:column;gap:8px;z-index:99}
+.fab{width:50px;height:50px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform .15s;border:none;font-size:22px;box-shadow:0 2px 16px rgba(0,0,0,.15)}
+.fab:active{transform:scale(.9)}
+.fab-scan{background:var(--white);font-size:19px}
+.fab-add{background:var(--black);color:#fff}
+
+/* MODAL */
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;display:flex;align-items:flex-end;opacity:0;pointer-events:none;transition:opacity .2s}
+.ov.on{opacity:1;pointer-events:all}
+.modal{width:100%;background:var(--white);border-radius:24px 24px 0 0;padding:18px 18px calc(22px + var(--sb));transform:translateY(100%);transition:transform .28s cubic-bezier(.32,.72,0,1);max-height:92dvh;overflow-y:auto}
+.ov.on .modal{transform:translateY(0)}
+.mh{width:36px;height:4px;background:var(--g10);border-radius:2px;margin:0 auto 18px}
+.mt{font-size:19px;font-weight:900;margin-bottom:16px;letter-spacing:-.4px}
+
+/* FORM */
+.fld{margin-bottom:13px}
+.flbl{font-size:10px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--g6);margin-bottom:7px;display:block}
+.fi{width:100%;background:var(--bg);border:none;border-radius:12px;padding:13px 14px;font-family:var(--sans);font-size:15px;color:var(--black);outline:none;-webkit-appearance:none;font-weight:500}
+.fi:focus{background:var(--g10)}
+.fi.big{font-size:30px;font-weight:900;letter-spacing:-.8px}
+.fi::placeholder{color:var(--g8);font-weight:400}
+.fi-row{display:flex;gap:8px}.fi-row .fi{flex:1}
+
+/* PAY SELECTOR */
+.pay-sel{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:13px}
+.pay-opt{padding:11px 8px;border-radius:12px;text-align:center;cursor:pointer;transition:all .15s;border:2px solid var(--g10);background:var(--bg)}
+.pay-opt.on{border-color:var(--black);background:var(--black)}
+.pay-opt-ico{font-size:18px;margin-bottom:3px}
+.pay-opt-lbl{font-size:11px;font-weight:700;color:var(--g5);letter-spacing:.03em}
+.pay-opt.on .pay-opt-lbl{color:#fff}
+
+/* CAT GRID */
+.cgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.cbt{background:var(--bg);border:2px solid transparent;border-radius:12px;padding:9px 3px;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;transition:all .12s}
+.cbt.on{background:var(--g1);border-color:var(--g1)}
+.cico{font-size:19px}
+.clbl{font-size:9px;color:var(--g5);text-align:center;font-weight:700;text-transform:uppercase;letter-spacing:.02em}
+.cbt.on .clbl{color:#fff}
+
+/* BTNS */
+.btn{width:100%;padding:15px;border:none;border-radius:14px;font-family:var(--sans);font-size:15px;font-weight:800;cursor:pointer;margin-top:6px;letter-spacing:-.2px;transition:opacity .15s}
+.btn:active{opacity:.8}
+.btn-p{background:var(--black);color:#fff}
+.btn-s{background:var(--bg);color:var(--g3)}
+.btn-d{background:var(--redl);color:var(--red)}
+
+/* LIST ITEMS */
+.litem{display:flex;align-items:center;gap:10px;padding:11px 13px;background:var(--bg);border-radius:12px;margin-bottom:7px}
+.lico{font-size:16px;flex-shrink:0}
+.linfo{flex:1;min-width:0}
+.lname{font-size:14px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lval{font-size:12px;color:var(--g6);margin-top:1px;font-weight:500}
+.ldel{width:28px;height:28px;border-radius:8px;background:var(--redl);color:var(--red);display:flex;align-items:center;justify-content:center;font-size:12px;cursor:pointer;flex-shrink:0;border:none;font-family:var(--sans)}
+
+/* MONTH FILTER */
+.mf{display:flex;gap:7px;padding:0 16px 12px;overflow-x:auto;scrollbar-width:none}
+.mf::-webkit-scrollbar{display:none}
+.mpill{padding:6px 14px;border-radius:99px;white-space:nowrap;font-size:12px;font-weight:700;cursor:pointer;background:var(--white);color:var(--g5);transition:all .12s}
+.mpill.on{background:var(--black);color:#fff}
+
+/* SETTINGS */
+.sgrp{background:var(--white);border-radius:16px;margin:0 16px 10px;overflow:hidden}
+.sit{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--g11);cursor:pointer}
+.sit:last-child{border-bottom:none}
+.sit:active{background:var(--bg)}
+.sico{font-size:20px;width:32px;text-align:center}
+.sinf{flex:1}
+.stit{font-size:14px;font-weight:700}
+.ssub{font-size:12px;color:var(--g6);margin-top:1px;font-weight:500}
+.slbl{font-size:10px;font-weight:800;color:var(--g6);text-transform:uppercase;letter-spacing:.09em;padding:14px 16px 7px;display:block}
+
+/* NOTIF */
+.nopt{display:flex;align-items:center;gap:12px;padding:13px;background:var(--bg);border-radius:13px;margin-bottom:8px;cursor:pointer;transition:all .15s;border:2px solid transparent}
+.nopt.on{background:var(--g1);border-color:var(--g1)}
+.nopt.on .nopt-t{color:#fff}
+.nopt-t{font-size:14px;font-weight:600}
+.nchk{width:22px;height:22px;border-radius:50%;border:2px solid var(--g8);margin-left:auto;flex-shrink:0;transition:all .15s}
+.nopt.on .nchk{background:#fff;border-color:#fff}
+
+/* STREAK */
+.streak{background:var(--white);border-radius:99px;padding:5px 12px;font-size:13px;font-weight:800;cursor:pointer;display:inline-flex;align-items:center;gap:5px;color:var(--black)}
+
+/* SCAN */
+.sdrop{border:2px dashed var(--g9);border-radius:16px;padding:28px;text-align:center;cursor:pointer;margin-bottom:12px;transition:border-color .15s}
+.sdrop:active{border-color:var(--black)}
+
+/* TOAST */
+.toast{position:fixed;top:52px;left:50%;transform:translateX(-50%) translateY(-60px);background:var(--g1);color:#fff;padding:11px 20px;border-radius:99px;font-size:13px;font-weight:700;z-index:999;transition:transform .3s cubic-bezier(.32,.72,0,1);white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,.2)}
+.toast.on{transform:translateX(-50%) translateY(0)}
+
+/* CONFIRM */
+.cov{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:300;display:flex;align-items:center;justify-content:center;padding:24px;opacity:0;pointer-events:none;transition:opacity .2s}
+.cov.on{opacity:1;pointer-events:all}
+.cbox{background:var(--white);border-radius:20px;padding:24px;width:100%;max-width:320px}
+.ct{font-size:17px;font-weight:900;margin-bottom:8px;letter-spacing:-.3px}
+.cb{font-size:14px;color:var(--g5);line-height:1.5;margin-bottom:20px}
+.ca{display:flex;gap:8px}
+.ca .btn{margin:0;flex:1;padding:13px}
+
+/* NOTIF OPTION */
+.nopt-ico{font-size:22px}
+</style>
+</head>
+<body>
+
+<!-- INSTALL BANNER -->
+<div id="ib"><span style="font-size:20px;flex-shrink:0">📲</span><div class="ib-t"><b>Adicione à Tela Inicial para salvar dados</b>Safari → Compartilhar → Adicionar à Tela Inicial</div><span onclick="document.getElementById('ib').classList.remove('on')" style="font-size:20px;cursor:pointer;opacity:.5;flex-shrink:0;padding:2px">✕</span></div>
+
+<!-- HOME -->
+<div id="pgHome" class="pg">
+  <div class="hdr">
+    <div class="hdr-row">
+      <div><div class="hdr-eyebrow" id="hGreet">Bom dia, Marlon</div><div class="hdr-title" id="hDate">—</div></div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <div class="streak" onclick="oM('mStreak')">🔥 <span id="streakN">0</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="alert" id="mainAlert"><span style="font-size:15px;flex-shrink:0" id="alertIco"></span><span id="alertTxt"></span></div>
+  <div class="sum-card">
+    <div class="sc-top">
+      <div><div class="sc-lbl">Disponível este mês</div></div>
+      <div class="sc-badge ok" id="scBadge">—</div>
+    </div>
+    <div class="sc-val ok" id="scVal">—</div>
+    <div class="sc-sub" id="scSub">Configure o salário para começar</div>
+    <div class="sc-divider"></div>
+    <div class="sc-stats">
+      <div class="sc-stat"><div class="sc-stat-lbl">Receita</div><div class="sc-stat-val" id="stInc">—</div></div>
+      <div class="sc-stat"><div class="sc-stat-lbl">Fixos</div><div class="sc-stat-val" id="stFix">—</div></div>
+      <div class="sc-stat"><div class="sc-stat-lbl">Variáveis</div><div class="sc-stat-val" id="stVar">—</div></div>
+    </div>
+  </div>
+  <div class="prog-wrap">
+    <div class="prog-hdr"><span class="prog-lbl">Orçamento do mês</span><span class="prog-pct" id="progPct">—</span></div>
+    <div class="prog-track"><div class="prog-fill ok" id="progFill" style="width:0%"></div></div>
+  </div>
+  <div class="day-row">
+    <div class="day-card">
+      <div class="dc-lbl">Posso gastar hoje</div>
+      <div class="dc-val ok" id="dayLeft">—</div>
+      <div class="dc-sub" id="daySub">—</div>
+    </div>
+    <div class="day-card">
+      <div class="dc-lbl">Crédito pendente</div>
+      <div class="dc-val blue" id="credPend">R$ 0</div>
+      <div class="dc-sub">fatura futura</div>
+    </div>
+  </div>
+  <div class="day-row" style="margin-top:-4px">
+    <div class="day-card">
+      <div class="dc-lbl">Alimentação usado</div>
+      <div class="dc-val purple" id="foodUsed">R$ 0</div>
+      <div class="dc-sub" id="foodSub">ticket disponível</div>
+    </div>
+    <div class="day-card">
+      <div class="dc-lbl">Ticket disponível</div>
+      <div class="dc-val ok" id="foodLeft">—</div>
+      <div class="dc-sub">saldo restante</div>
+    </div>
+  </div>
+  <div class="wbars" id="wbars"></div>
+  <div class="qstrip" id="qstrip"></div>
+  <div class="sec">
+    <div class="sec-hdr"><span class="sec-title">Últimos gastos</span><span class="sec-link" onclick="goTo('pgHistory')">Ver todos</span></div>
+    <div class="clist" id="recentList"></div>
+  </div>
+  <div id="debtSec" class="sec" style="display:none">
+    <div class="sec-hdr"><span class="sec-title">Dívidas</span><span class="sec-link" onclick="oM('mDebts')">Gerenciar</span></div>
+    <div class="clist" id="debtList"></div>
+  </div>
+  <!-- Bills summary chip -->
+  <div id="billsChip" style="display:none;margin:0 16px 10px">
+    <div style="background:var(--white);border-radius:14px;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;cursor:pointer" onclick="goTo('pgBills')">
+      <span style="font-size:13px;font-weight:700;color:var(--black)">📋 Contas do mês</span>
+      <div style="display:flex;gap:8px;align-items:center">
+        <span id="billChipPaid" style="font-size:11px;font-weight:700;color:var(--green);display:none"></span>
+        <span id="billChipPend" style="font-size:11px;font-weight:700;color:var(--amber);display:none"></span>
+        <span id="billChipOver" style="font-size:11px;font-weight:700;color:var(--red);display:none"></span>
+        <span style="color:var(--g7);font-size:16px">›</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- BILLS PAGE -->
+<div id="pgBills" class="pg">
+  <div class="hdr">
+    <div class="hdr-row">
+      <div>
+        <div class="hdr-eyebrow" id="billsMonth">Este mês</div>
+        <div class="hdr-title">Contas</div>
+      </div>
+      <div onclick="goTo('pgHome')" style="font-size:13px;font-weight:700;color:var(--blue);cursor:pointer">← Voltar</div>
+    </div>
+  </div>
+  <!-- Summary bar -->
+  <div style="display:flex;gap:8px;margin:0 16px 14px">
+    <div style="flex:1;background:var(--white);border-radius:13px;padding:12px;text-align:center">
+      <div style="font-size:18px;font-weight:900;color:var(--green)" id="bSum-paid">0</div>
+      <div style="font-size:10px;font-weight:700;color:var(--g6);text-transform:uppercase;letter-spacing:.06em;margin-top:2px">Pagas</div>
+    </div>
+    <div style="flex:1;background:var(--white);border-radius:13px;padding:12px;text-align:center">
+      <div style="font-size:18px;font-weight:900;color:var(--amber)" id="bSum-pend">0</div>
+      <div style="font-size:10px;font-weight:700;color:var(--g6);text-transform:uppercase;letter-spacing:.06em;margin-top:2px">Pendentes</div>
+    </div>
+    <div style="flex:1;background:var(--white);border-radius:13px;padding:12px;text-align:center">
+      <div style="font-size:18px;font-weight:900;color:var(--red)" id="bSum-over">0</div>
+      <div style="font-size:10px;font-weight:700;color:var(--g6);text-transform:uppercase;letter-spacing:.06em;margin-top:2px">Atrasadas</div>
+    </div>
+    <div style="flex:1;background:var(--white);border-radius:13px;padding:12px;text-align:center">
+      <div style="font-size:18px;font-weight:900;color:var(--blue)" id="bSum-sched">0</div>
+      <div style="font-size:10px;font-weight:700;color:var(--g6);text-transform:uppercase;letter-spacing:.06em;margin-top:2px">Agendadas</div>
+    </div>
+  </div>
+  <!-- Total pago barra -->
+  <div style="margin:0 16px 14px;background:var(--white);border-radius:13px;padding:13px 16px">
+    <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+      <span style="font-size:12px;font-weight:600;color:var(--g6)">Total pago este mês</span>
+      <span style="font-size:12px;font-weight:800;color:var(--black)" id="bTotalPaid">R$ 0,00</span>
+    </div>
+    <div style="display:flex;justify-content:space-between">
+      <span style="font-size:12px;font-weight:600;color:var(--g6)">Total previsto</span>
+      <span style="font-size:12px;font-weight:800;color:var(--g5)" id="bTotalExpected">R$ 0,00</span>
+    </div>
+  </div>
+  <!-- Bills list -->
+  <div class="sec">
+    <div class="sec-hdr"><span class="sec-title">Todas as contas</span><span class="sec-link" onclick="oM('mFixed')">+ Gerenciar</span></div>
+    <div id="fullBillsList"></div>
+  </div>
+</div>
+
+<!-- SAVINGS -->
+<div id="pgSavings" class="pg">
+  <div class="hdr">
+    <div class="hdr-row">
+      <div><div class="hdr-eyebrow">Guardando</div><div class="hdr-title">Reservas</div></div>
+      <div class="sec-link" onclick="oM('mNewGoal')" style="font-size:24px">+</div>
+    </div>
+  </div>
+  <!-- Reserva de Emergência -->
+  <div class="sav-hero" id="emerHero">
+    <div class="sav-hero-lbl">🛡️ Reserva de Emergência</div>
+    <div class="sav-hero-val" id="emerVal">R$ 0,00</div>
+    <div class="sav-hero-sub" id="emerSub">Meta: não definida</div>
+    <div class="sav-prog-wrap">
+      <div class="sav-prog-hdr"><span class="sav-prog-lbl">Progresso</span><span class="sav-prog-pct" id="emerPct">0%</span></div>
+      <div class="sav-prog-track"><div class="sav-prog-fill" id="emerFill" style="width:0%"></div></div>
+    </div>
+  </div>
+  <div class="sec" style="margin-top:4px">
+    <div class="sec-hdr">
+      <span class="sec-title">Emergência</span>
+      <span class="sec-link" onclick="oM('mEmergencia')">Configurar</span>
+    </div>
+    <div class="clist" id="emerDepList"></div>
+  </div>
+  <!-- Metas -->
+  <div class="sec">
+    <div class="sec-hdr"><span class="sec-title">Metas</span><span class="sec-link" onclick="oM('mNewGoal')">Nova meta +</span></div>
+    <div id="goalsList"></div>
+  </div>
+</div>
+
+<!-- ANALYSIS -->
+<div id="pgAnalysis" class="pg">
+  <div class="hdr"><div class="hdr-row"><div><div class="hdr-eyebrow">Este mês</div><div class="hdr-title">Análise</div></div><div class="sc-stat-val" id="aTot" style="font-size:20px;font-weight:900">—</div></div></div>
+  <div class="sec"><div class="sec-hdr"><span class="sec-title">Por categoria</span></div><div class="clist" id="aCatList"></div></div>
+  <div class="sec"><div class="sec-hdr"><span class="sec-title">Por pagamento</span></div><div class="clist" id="aPayList"></div></div>
+</div>
+
+<!-- HISTORY -->
+<div id="pgHistory" class="pg">
+  <div class="hdr"><div class="hdr-row"><div><div class="hdr-eyebrow">Registros</div><div class="hdr-title" id="histTitle">—</div></div></div></div>
+  <div class="mf" id="mfilter"></div>
+  <div class="sec"><div class="clist" id="histList"></div></div>
+</div>
+
+<!-- SETTINGS -->
+<div id="pgSettings" class="pg">
+  <div class="hdr"><div class="hdr-row"><div><div class="hdr-eyebrow">Configurações</div><div class="hdr-title">Conta</div></div></div></div>
+  <span class="slbl">Renda</span>
+  <div class="sgrp">
+    <div class="sit" onclick="oM('mSal')"><span class="sico">💼</span><div class="sinf"><div class="stit">Salário e Ticket</div><div class="ssub" id="sSalSub">Não configurado</div></div><span style="color:var(--g7);font-size:18px">›</span></div>
+  </div>
+  <span class="slbl">Gastos</span>
+  <div class="sgrp">
+    <div class="sit" onclick="oM('mFixed')"><span class="sico">📋</span><div class="sinf"><div class="stit">Gastos Fixos</div><div class="ssub" id="sFixSub">Nenhum</div></div><span style="color:var(--g7);font-size:18px">›</span></div>
+    <div class="sit" onclick="oM('mDebts')"><span class="sico">💳</span><div class="sinf"><div class="stit">Dívidas</div><div class="ssub" id="sDebtSub">Nenhuma</div></div><span style="color:var(--g7);font-size:18px">›</span></div>
+  </div>
+  <span class="slbl">Lembretes</span>
+  <div class="sgrp">
+    <div class="sit" onclick="oM('mNotif')"><span class="sico">🔔</span><div class="sinf"><div class="stit">Horários</div><div class="ssub" id="sNotifSub">—</div></div><span style="color:var(--g7);font-size:18px">›</span></div>
+  </div>
+  <span class="slbl">Dados</span>
+  <div class="sgrp">
+    <div class="sit" onclick="askReset()"><span class="sico">🗑️</span><div class="sinf"><div class="stit" style="color:var(--red)">Limpar dados</div><div class="ssub">Recomeçar do zero</div></div></div>
+  </div>
+  <div style="text-align:center;padding:20px 16px;font-size:12px;color:var(--g7);line-height:1.7">
+    <strong style="color:var(--black);display:block;font-size:14px;margin-bottom:3px">Cadê Meu Dinheiro, Marlon? 🕵️</strong>
+    "Registre agora ou chore no dia 28."
+  </div>
+</div>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nit on" id="nHome" onclick="goTo('pgHome')"><span class="nic">🏠</span><span class="nlb">Início</span></div>
+  <div class="nit" id="nBills" onclick="goTo('pgBills')"><span class="nic">📋</span><span class="nlb">Contas</span></div>
+  <div class="nit" id="nSavings" onclick="goTo('pgSavings')"><span class="nic">🏦</span><span class="nlb">Reservas</span></div>
+  <div class="nit" id="nAnalysis" onclick="goTo('pgAnalysis')"><span class="nic">📊</span><span class="nlb">Análise</span></div>
+  <div class="nit" id="nSettings" onclick="goTo('pgSettings')"><span class="nic">⚙️</span><span class="nlb">Config</span></div>
+</nav>
+<div class="fabs">
+  <button class="fab fab-voice" id="fabVoice" onclick="startVoice()">🎤</button>
+  <button class="fab fab-scan" onclick="oM('mScan')">📷</button>
+  <button class="fab fab-add" onclick="oM('mAdd')">+</button>
+</div>
+
+<!-- MODAL: PAY BILL -->
+<div class="ov" id="mPayBill"><div class="modal">
+  <div class="mh"></div>
+  <div class="mt" id="mPayBillTitle">Registrar pagamento</div>
+  <input type="hidden" id="payBillId">
+  <input type="hidden" id="payBillType">
+
+  <div style="background:var(--bg);border-radius:13px;padding:13px 15px;margin-bottom:14px">
+    <div style="font-size:11px;font-weight:700;color:var(--g6);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px">Valor estimado</div>
+    <div style="font-size:22px;font-weight:900;color:var(--g4)" id="payBillEstimated">R$ 0,00</div>
+  </div>
+
+  <div class="fld">
+    <label class="flbl">Valor real pago (R$)</label>
+    <input class="fi big" id="payBillVal" type="number" inputmode="decimal" placeholder="0,00">
+    <div style="font-size:11px;color:var(--g6);margin-top:5px;font-weight:500">💡 Se diferente do estimado, a diferença ajusta seu saldo automaticamente.</div>
+  </div>
+  <div class="fld">
+    <label class="flbl">Data do pagamento</label>
+    <input class="fi" id="payBillDate" type="date">
+  </div>
+  <div class="fld">
+    <label class="flbl">Forma de pagamento</label>
+    <div class="pay-sel" id="payBillPaySel">
+      <div class="pay-opt on" data-pay="pix" onclick="setPayBillPay('pix')"><div class="pay-opt-ico">💳</div><div class="pay-opt-lbl">Pix/Débito</div></div>
+      <div class="pay-opt" data-pay="credit" onclick="setPayBillPay('credit')"><div class="pay-opt-ico">💙</div><div class="pay-opt-lbl">Crédito</div></div>
+      <div class="pay-opt" data-pay="food" onclick="setPayBillPay('food')"><div class="pay-opt-ico">🟣</div><div class="pay-opt-lbl">Alimentação</div></div>
+      <div class="pay-opt" data-pay="cash" onclick="setPayBillPay('cash')"><div class="pay-opt-ico">💵</div><div class="pay-opt-lbl">Dinheiro</div></div>
+    </div>
+  </div>
+  <div class="fld">
+    <label class="flbl">Observação (opcional)</label>
+    <input class="fi" id="payBillObs" placeholder="Ex: Pago com desconto, juros de atraso…">
+  </div>
+  <button class="btn btn-p" onclick="confirmPayBill()">✅ Confirmar pagamento</button>
+  <button class="btn btn-s" onclick="cM('mPayBill')">Cancelar</button>
+</div></div>
+
+<!-- MODAL: ADD -->
+<div class="ov" id="mAdd"><div class="modal">
+  <div class="mh"></div><div class="mt">Registrar gasto</div>
+  <div class="fld"><label class="flbl">Valor (R$)</label><input class="fi big" id="eVal" type="number" inputmode="decimal" placeholder="0,00"></div>
+  <div class="fld"><label class="flbl">Descrição</label><input class="fi" id="eDesc" placeholder="Ex: Almoço, Uber, Farmácia…"></div>
+  <div class="fld"><label class="flbl">Forma de pagamento</label>
+    <div class="pay-sel" id="paySel">
+      <div class="pay-opt on" data-pay="pix" onclick="setPay('pix')"><div class="pay-opt-ico">💳</div><div class="pay-opt-lbl">Pix / Débito</div></div>
+      <div class="pay-opt" data-pay="credit" onclick="setPay('credit')"><div class="pay-opt-ico">💙</div><div class="pay-opt-lbl">Crédito</div></div>
+      <div class="pay-opt" data-pay="food" onclick="setPay('food')"><div class="pay-opt-ico">🟣</div><div class="pay-opt-lbl">Alimentação</div></div>
+      <div class="pay-opt" data-pay="cash" onclick="setPay('cash')"><div class="pay-opt-ico">💵</div><div class="pay-opt-lbl">Dinheiro</div></div>
+    </div>
+  </div>
+  <div class="fld"><label class="flbl">Categoria</label><div class="cgrid" id="catGrid"></div></div>
+  <div class="fld"><label class="flbl">Data</label><input class="fi" id="eDate" type="date"></div>
+  <button class="btn btn-p" onclick="saveExp()">Salvar</button>
+  <button class="btn btn-s" onclick="cM('mAdd')">Cancelar</button>
+</div></div>
+
+<!-- MODAL: VOICE -->
+<div class="ov" id="mVoice"><div class="modal">
+  <div class="mh"></div>
+  <div class="mt">🎤 Registro por Voz</div>
+  <div id="voiceListening" style="text-align:center;padding:10px 0 24px;display:none">
+    <div id="voiceOrb" style="width:80px;height:80px;border-radius:50%;background:var(--red);margin:0 auto 16px;display:flex;align-items:center;justify-content:center;font-size:36px;animation:vPulse 1s infinite">🎤</div>
+    <div style="font-size:16px;font-weight:800;margin-bottom:6px">Ouvindo…</div>
+    <div style="font-size:13px;color:var(--g6);font-weight:500;line-height:1.5">Ex: <em>"Gastei 45 no almoço, alimentação"</em></div>
+    <div id="voiceTranscript" style="margin-top:14px;padding:12px 14px;background:var(--bg);border-radius:12px;font-size:14px;color:var(--g2);font-weight:500;min-height:44px;line-height:1.5;text-align:left"></div>
+    <button onclick="stopVoice()" style="margin-top:14px;width:100%;height:44px;background:var(--redl);color:var(--red);border:none;border-radius:12px;font-family:var(--sans);font-size:14px;font-weight:800;cursor:pointer">⏹ Parar</button>
+  </div>
+  <div id="voiceProcessing" style="text-align:center;padding:20px 0 28px;display:none">
+    <div style="font-size:40px;margin-bottom:12px" id="voiceProcIco">🧠</div>
+    <div style="font-size:15px;font-weight:800;margin-bottom:4px">Interpretando…</div>
+    <div style="font-size:13px;color:var(--g6);font-weight:500">A IA está entendendo o que você disse</div>
+  </div>
+  <div id="voiceResult" style="display:none">
+    <div style="background:var(--greenl);border-radius:14px;padding:14px;margin-bottom:14px">
+      <div style="font-size:10px;font-weight:800;color:var(--green);text-transform:uppercase;letter-spacing:.09em;margin-bottom:12px">✅ Entendi isso — confirme:</div>
+      <div class="fld"><label class="flbl">Valor (R$)</label><input class="fi big" id="vVal" type="number" inputmode="decimal"></div>
+      <div class="fld"><label class="flbl">Descrição</label><input class="fi" id="vDesc"></div>
+      <div class="fld"><label class="flbl">Pagamento</label>
+        <div class="pay-sel" id="vPaySel">
+          <div class="pay-opt on" data-pay="pix" onclick="setVPay('pix')"><div class="pay-opt-ico">💳</div><div class="pay-opt-lbl">Pix/Débito</div></div>
+          <div class="pay-opt" data-pay="credit" onclick="setVPay('credit')"><div class="pay-opt-ico">💙</div><div class="pay-opt-lbl">Crédito</div></div>
+          <div class="pay-opt" data-pay="food" onclick="setVPay('food')"><div class="pay-opt-ico">🟣</div><div class="pay-opt-lbl">Alimentação</div></div>
+          <div class="pay-opt" data-pay="cash" onclick="setVPay('cash')"><div class="pay-opt-ico">💵</div><div class="pay-opt-lbl">Dinheiro</div></div>
+        </div>
+      </div>
+      <div class="fld"><label class="flbl">Categoria</label><div class="cgrid" id="vCatGrid"></div></div>
+    </div>
+    <button class="btn btn-p" onclick="saveVoiceExp()">Confirmar e salvar ✅</button>
+    <button onclick="startVoice()" style="width:100%;height:42px;background:var(--bg);color:var(--g3);border:none;border-radius:12px;font-family:var(--sans);font-size:14px;font-weight:700;cursor:pointer;margin-top:8px">🎤 Falar novamente</button>
+  </div>
+  <div id="voiceError" style="display:none;background:var(--redl);border-radius:12px;padding:14px;margin-bottom:12px;font-size:13px;color:var(--red);font-weight:500;line-height:1.5"></div>
+  <div id="voiceIdle">
+    <div style="text-align:center;padding:14px 0 18px">
+      <div style="font-size:54px;margin-bottom:12px">🎤</div>
+      <div style="font-size:17px;font-weight:900;margin-bottom:8px">Fale naturalmente</div>
+      <div style="font-size:13px;color:var(--g6);line-height:1.7;font-weight:500;margin-bottom:18px">
+        "Gastei 45 no almoço"<br>
+        "R$ 120 no mercado, alimentação"<br>
+        "Uber 28 reais no débito"<br>
+        "Farmácia 67 no crédito"
+      </div>
+      <button onclick="startVoice()" style="width:100%;height:52px;background:var(--red);color:#fff;border:none;border-radius:14px;font-family:var(--sans);font-size:16px;font-weight:800;cursor:pointer">🎤 Começar a falar</button>
+    </div>
+  </div>
+  <button class="btn btn-s" onclick="cM('mVoice');resetVoice()" style="margin-top:4px">Fechar</button>
+</div></div>
+
+<!-- MODAL: SAL -->
+<div class="ov" id="mSal"><div class="modal">
+  <div class="mh"></div><div class="mt">Salário e Ticket</div>
+  <div class="fld"><label class="flbl">Seu nome (para as zoações 😂)</label><input class="fi" id="eNome" placeholder="Ex: Marlon" autocomplete="given-name"></div>
+  <div class="fld"><label class="flbl">Salário líquido (R$)</label><input class="fi big" id="eSal" type="number" inputmode="decimal" placeholder="0,00"></div>
+  <div class="fld"><label class="flbl">Ticket Alimentação (R$)</label><input class="fi big" id="eTk" type="number" inputmode="decimal" placeholder="0,00"></div>
+  <div style="background:var(--bg);border-radius:12px;padding:12px 14px;margin-bottom:13px;font-size:13px;color:var(--g5);line-height:1.5;font-weight:500">
+    💡 O ticket alimentação é rastreado separadamente — você verá quanto usou e quanto resta.
+  </div>
+  <button class="btn btn-p" onclick="saveSal()">Salvar</button>
+  <button class="btn btn-s" onclick="cM('mSal')">Cancelar</button>
+</div></div>
+
+<!-- MODAL: FIXED -->
+<div class="ov" id="mFixed"><div class="modal">
+  <div class="mh"></div><div class="mt">Gastos Fixos</div>
+  <div id="fixedList" style="margin-bottom:12px"></div>
+  <div style="background:var(--bg);border-radius:14px;padding:14px">
+    <div class="flbl" style="margin-bottom:9px">Adicionar novo</div>
+    <div style="display:flex;gap:7px;margin-bottom:8px">
+      <input class="fi" id="fName" placeholder="Nome…" style="flex:1;font-size:14px;padding:11px 12px">
+      <input class="fi" id="fVal" type="number" inputmode="decimal" placeholder="R$" style="width:85px;font-size:14px;padding:11px 12px">
+    </div>
+    <div style="display:flex;gap:7px;margin-bottom:8px;align-items:center">
+      <div style="flex:1">
+        <label style="font-size:10px;font-weight:700;color:var(--g6);text-transform:uppercase;letter-spacing:.08em;display:block;margin-bottom:5px">Dia de vencimento</label>
+        <input class="fi" id="fDue" type="number" inputmode="numeric" placeholder="Ex: 5" min="1" max="31" style="font-size:14px;padding:11px 12px">
+      </div>
+      <div style="flex:1">
+        <label style="font-size:10px;font-weight:700;color:var(--g6);text-transform:uppercase;letter-spacing:.08em;display:block;margin-bottom:5px">Emoji (opcional)</label>
+        <input class="fi" id="fIco" placeholder="💧 💡 📱" style="font-size:18px;text-align:center;padding:11px 12px">
+      </div>
+    </div>
+    <button onclick="addFixed()" style="width:100%;height:42px;background:var(--black);color:#fff;border:none;border-radius:10px;font-family:var(--sans);font-size:14px;font-weight:800;cursor:pointer">+ Adicionar</button>
+  </div>
+  <button class="btn btn-s" onclick="cM('mFixed')" style="margin-top:10px">Fechar</button>
+</div></div>
+
+<!-- MODAL: DEBTS -->
+<div class="ov" id="mDebts"><div class="modal">
+  <div class="mh"></div><div class="mt">Dívidas Ativas</div>
+  <div id="debtEditList" style="margin-bottom:12px"></div>
+  <div style="background:var(--bg);border-radius:14px;padding:14px">
+    <div class="flbl" style="margin-bottom:9px">Adicionar dívida</div>
+    <div style="display:flex;gap:7px;margin-bottom:8px">
+      <input class="fi" id="dName" placeholder="Nome da dívida…" style="flex:1;font-size:14px;padding:11px 12px">
+      <input class="fi" id="dIco" placeholder="💳" style="width:56px;font-size:18px;text-align:center;padding:11px 8px">
+    </div>
+    <div style="display:flex;gap:7px;margin-bottom:8px">
+      <input class="fi" id="dTotal" type="number" inputmode="decimal" placeholder="Total (R$)" style="flex:1;font-size:13px;padding:10px 11px">
+      <input class="fi" id="dParc" type="number" inputmode="decimal" placeholder="Parcela (R$)" style="flex:1;font-size:13px;padding:10px 11px">
+    </div>
+    <div style="display:flex;gap:7px;margin-bottom:8px">
+      <div style="flex:1">
+        <label style="font-size:10px;font-weight:700;color:var(--g6);text-transform:uppercase;letter-spacing:.08em;display:block;margin-bottom:5px">Dia do vencimento</label>
+        <input class="fi" id="dDue" type="number" inputmode="numeric" placeholder="Ex: 10" min="1" max="31" style="font-size:14px;padding:11px 12px">
+      </div>
+      <div style="flex:1">
+        <label style="font-size:10px;font-weight:700;color:var(--g6);text-transform:uppercase;letter-spacing:.08em;display:block;margin-bottom:5px">Total de parcelas</label>
+        <input class="fi" id="dNparc" type="number" inputmode="numeric" placeholder="Ex: 24" min="1" style="font-size:14px;padding:11px 12px">
+      </div>
+    </div>
+    <div style="font-size:12px;color:var(--g6);margin-bottom:10px;font-weight:500;line-height:1.4">💡 Parcelas já pagas serão calculadas automaticamente pelo total ÷ parcela.</div>
+    <button onclick="addDebt()" style="width:100%;height:42px;background:var(--black);color:#fff;border:none;border-radius:10px;font-family:var(--sans);font-size:14px;font-weight:800;cursor:pointer">+ Adicionar dívida</button>
+  </div>
+  <button class="btn btn-s" onclick="cM('mDebts')" style="margin-top:10px">Fechar</button>
+</div></div>
+
+<!-- MODAL: NOTIF -->
+<div class="ov" id="mNotif"><div class="modal">
+  <div class="mh"></div><div class="mt">Lembretes</div>
+  <div class="nopt on" id="n-almoco" onclick="tgN('almoco')"><span class="nopt-ico">☀️</span><div><div class="nopt-t">Após almoço — 13h</div></div><div class="nchk"></div></div>
+  <div class="nopt on" id="n-fim" onclick="tgN('fim')"><span class="nopt-ico">🌙</span><div><div class="nopt-t">Final do dia — 20h</div></div><div class="nchk"></div></div>
+  <div class="nopt" id="n-manha" onclick="tgN('manha')"><span class="nopt-ico">🌅</span><div><div class="nopt-t">Manhã — 8h</div></div><div class="nchk"></div></div>
+  <button class="btn btn-p" onclick="cM('mNotif')" style="margin-top:12px">Salvar</button>
+</div></div>
+
+<!-- MODAL: STREAK -->
+<div class="ov" id="mStreak"><div class="modal">
+  <div class="mh"></div>
+  <div style="text-align:center;padding:8px 0 18px">
+    <div style="font-size:54px;margin-bottom:10px">🔥</div>
+    <div style="font-size:52px;font-weight:900;letter-spacing:-2px;margin-bottom:5px" id="streakBig">0</div>
+    <div style="font-size:14px;color:var(--g6);font-weight:600;margin-bottom:16px">dias com registro este mês</div>
+    <div style="background:var(--bg);border-radius:14px;padding:14px;font-size:14px;font-weight:500;line-height:1.5;color:var(--g2)" id="streakMsg"></div>
+  </div>
+  <button class="btn btn-p" onclick="cM('mStreak')">Fechar</button>
+</div></div>
+
+<!-- MODAL: SCAN -->
+<div class="ov" id="mScan"><div class="modal">
+  <div class="mh"></div><div class="mt">Escanear nota ou print</div>
+  <div class="sdrop" id="scanDrop" onclick="document.getElementById('scanInput').click()">
+    <div style="font-size:34px;margin-bottom:8px">🖼️</div>
+    <div style="font-size:14px;font-weight:700;color:var(--g2)">Toque para escolher imagem</div>
+    <div style="font-size:12px;color:var(--g7);margin-top:4px">Nota fiscal, PIX, comprovante</div>
+  </div>
+  <input type="file" id="scanInput" accept="image/*" style="display:none" onchange="doScan(event)">
+  <div id="scanPreview" style="display:none;margin-bottom:12px"><img id="scanImg" style="width:100%;border-radius:12px;max-height:180px;object-fit:cover"></div>
+  <div id="scanLoading" style="display:none;text-align:center;padding:20px"><div style="font-size:28px;margin-bottom:8px" id="sIco">🔍</div><div style="font-size:14px;font-weight:700;color:var(--g2)" id="sTxt">Analisando…</div></div>
+  <div id="scanErr" style="display:none;background:var(--redl);border-radius:12px;padding:13px;margin-bottom:12px;font-size:13px;color:var(--red);font-weight:500"></div>
+  <div id="scanResult" style="display:none">
+    <div style="background:var(--greenl);border-radius:14px;padding:14px;margin-bottom:12px">
+      <div style="font-size:10px;font-weight:800;color:var(--green);text-transform:uppercase;letter-spacing:.09em;margin-bottom:12px">✅ Confirme os dados:</div>
+      <div class="fld"><label class="flbl">Valor (R$)</label><input class="fi big" id="sVal" type="number" inputmode="decimal"></div>
+      <div class="fld"><label class="flbl">Descrição</label><input class="fi" id="sDesc"></div>
+      <div class="fld"><label class="flbl">Data</label><input class="fi" id="sDate" type="date"></div>
+      <div class="fld"><label class="flbl">Pagamento</label>
+        <div class="pay-sel" id="sPaySel">
+          <div class="pay-opt on" data-pay="pix" onclick="setSPay('pix')"><div class="pay-opt-ico">💳</div><div class="pay-opt-lbl">Pix/Débito</div></div>
+          <div class="pay-opt" data-pay="credit" onclick="setSPay('credit')"><div class="pay-opt-ico">💙</div><div class="pay-opt-lbl">Crédito</div></div>
+          <div class="pay-opt" data-pay="food" onclick="setSPay('food')"><div class="pay-opt-ico">🟣</div><div class="pay-opt-lbl">Alimentação</div></div>
+          <div class="pay-opt" data-pay="cash" onclick="setSPay('cash')"><div class="pay-opt-ico">💵</div><div class="pay-opt-lbl">Dinheiro</div></div>
+        </div>
+      </div>
+      <div class="fld"><label class="flbl">Categoria</label><div class="cgrid" id="scanCatGrid"></div></div>
+    </div>
+    <button class="btn btn-p" onclick="saveScan()">Confirmar e salvar ✅</button>
+  </div>
+  <button class="btn btn-s" onclick="cM('mScan');resetScan()">Fechar</button>
+</div></div>
+
+<!-- MODAL: EMERGENCIA CONFIG -->
+<div class="ov" id="mEmergencia"><div class="modal">
+  <div class="mh"></div><div class="mt">🛡️ Reserva de Emergência</div>
+  <div class="fld"><label class="flbl">Saldo atual (R$)</label><input class="fi big" id="emerCur" type="number" inputmode="decimal" placeholder="0,00"></div>
+  <div class="fld"><label class="flbl">Meta (R$)</label><input class="fi big" id="emerGoal" type="number" inputmode="decimal" placeholder="Ex: 18.000,00"></div>
+  <div style="background:var(--bg);border-radius:12px;padding:12px 14px;margin-bottom:12px;font-size:13px;color:var(--g5);line-height:1.5;font-weight:500">
+    💡 Recomendado: 6x seu salário mensal (R$ <span id="emerTip">—</span>)
+  </div>
+  <button class="btn btn-p" onclick="saveEmer()">Salvar</button>
+  <button class="btn btn-s" onclick="cM('mEmergencia')">Cancelar</button>
+</div></div>
+
+<!-- MODAL: DEPOSITO EMERGÊNCIA -->
+<div class="ov" id="mDepEmer"><div class="modal">
+  <div class="mh"></div><div class="mt">💰 Depositar na Emergência</div>
+  <div class="fld"><label class="flbl">Valor (R$)</label><input class="fi big" id="dEmerVal" type="number" inputmode="decimal" placeholder="0,00"></div>
+  <div class="fld"><label class="flbl">Data</label><input class="fi" id="dEmerDate" type="date"></div>
+  <div class="fld"><label class="flbl">Observação</label><input class="fi" id="dEmerDesc" placeholder="Ex: Guardei do salário…"></div>
+  <button class="btn btn-p" onclick="depositEmer()">Depositar</button>
+  <button class="btn btn-s" onclick="cM('mDepEmer')">Cancelar</button>
+</div></div>
+
+<!-- MODAL: NOVA META -->
+<div class="ov" id="mNewGoal"><div class="modal">
+  <div class="mh"></div><div class="mt" id="mNewGoalTitle">Nova Meta</div>
+  <div class="fld"><label class="flbl">Nome da meta</label><input class="fi" id="gName" placeholder="Ex: Viagem para Paris, iPhone, Carro…"></div>
+  <div class="fld"><label class="flbl">Emoji (opcional)</label><input class="fi" id="gIco" placeholder="Ex: ✈️ 🚗 📱" style="font-size:22px;text-align:center"></div>
+  <div class="fld"><label class="flbl">Valor alvo (R$)</label><input class="fi big" id="gTarget" type="number" inputmode="decimal" placeholder="0,00"></div>
+  <div class="fld"><label class="flbl">Saldo inicial (R$)</label><input class="fi" id="gInitial" type="number" inputmode="decimal" placeholder="0,00 (opcional)"></div>
+  <button class="btn btn-p" onclick="saveGoal()">Criar meta</button>
+  <button class="btn btn-s" onclick="cM('mNewGoal')">Cancelar</button>
+</div></div>
+
+<!-- MODAL: DEPOSITO META -->
+<div class="ov" id="mDepGoal"><div class="modal">
+  <div class="mh"></div><div class="mt" id="mDepGoalTitle">💰 Depositar</div>
+  <input type="hidden" id="depGoalId">
+  <div class="fld"><label class="flbl">Valor (R$)</label><input class="fi big" id="dGoalVal" type="number" inputmode="decimal" placeholder="0,00"></div>
+  <div class="fld"><label class="flbl">Data</label><input class="fi" id="dGoalDate" type="date"></div>
+  <div class="fld"><label class="flbl">Observação</label><input class="fi" id="dGoalDesc" placeholder="Ex: Guardei do salário…"></div>
+  <button class="btn btn-p" onclick="depositGoal()">Depositar</button>
+  <button class="btn btn-s" onclick="cM('mDepGoal')">Cancelar</button>
+</div></div>
+
+<!-- CONFIRM -->
+<div class="cov" id="cov"><div class="cbox">
+  <div class="ct" id="ct"></div><div class="cb" id="cb"></div>
+  <div class="ca"><button class="btn btn-s" onclick="cConf()">Cancelar</button><button class="btn btn-d" id="cok">Confirmar</button></div>
+</div></div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const CATS=[
+  {id:'alimentacao',ico:'🍔',lbl:'Alimentação'},
+  {id:'transporte',ico:'🚗',lbl:'Transporte'},
+  {id:'mercado',ico:'🛒',lbl:'Mercado'},
+  {id:'saude',ico:'💊',lbl:'Saúde'},
+  {id:'lazer',ico:'🎮',lbl:'Lazer'},
+  {id:'vestuario',ico:'👕',lbl:'Roupas'},
+  {id:'educacao',ico:'📚',lbl:'Educação'},
+  {id:'outros',ico:'📦',lbl:'Outros'},
+];
+const PAYS={
+  pix:{lbl:'Pix/Débito',color:'green'},
+  credit:{lbl:'Crédito',color:'blue'},
+  food:{lbl:'Alimentação',color:'purple'},
+  cash:{lbl:'Dinheiro',color:'gray'},
+};
+const QUICK=[
+  {id:'alimentacao',ico:'🍔',lbl:'Almoço',pay:'food'},
+  {id:'transporte',ico:'⛽',lbl:'Combustível',pay:'pix'},
+  {id:'mercado',ico:'🛒',lbl:'Mercado',pay:'food'},
+  {id:'lazer',ico:'☕',lbl:'Café',pay:'pix'},
+  {id:'saude',ico:'💊',lbl:'Farmácia',pay:'pix'},
+  {id:'outros',ico:'📦',lbl:'Outro',pay:'pix'},
+];
+
+const DEF={sal:0,tk:0,nome:'',fixed:[],debts:[],exp:[],notifs:{almoco:true,fim:true,manha:false},streak:0,lastReg:null,emer:{cur:0,goal:0,deposits:[]},goals:[],billPayments:[]};
+let S={...DEF};
+let selCat='outros',selPay='pix',sCat='outros',sPay='pix';
+const K='cmdm3';
+
+// ── INDEXEDDB ──
+let db=null;
+function initDB(){return new Promise(r=>{try{const q=indexedDB.open('cmdm3',1);q.onupgradeneeded=e=>e.target.result.createObjectStore('d');q.onsuccess=e=>{db=e.target.result;r(true);};q.onerror=()=>r(false);}catch(e){r(false);}});}
+function dbSet(v){if(!db)return;try{db.transaction('d','readwrite').objectStore('d').put(v,K);}catch(e){}}
+function dbGet(){return new Promise(r=>{if(!db){r(null);return;}try{const q=db.transaction('d','readonly').objectStore('d').get(K);q.onsuccess=()=>r(q.result||null);q.onerror=()=>r(null);}catch(e){r(null);}});}
+function sv(){const j=JSON.stringify(S);dbSet(j);try{localStorage.setItem(K,j);}catch(e){}try{sessionStorage.setItem(K,j);}catch(e){}}
+async function ld(){let d=await dbGet();if(d){try{S={...DEF,...JSON.parse(d)};return;}catch(e){}}try{d=localStorage.getItem(K);if(d){S={...DEF,...JSON.parse(d)};return;}}catch(e){}try{d=sessionStorage.getItem(K);if(d){S={...DEF,...JSON.parse(d)};}}catch(e){}}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,5);}
+function resetAll(){if(db)try{db.transaction('d','readwrite').objectStore('d').delete(K);}catch(e){}try{localStorage.removeItem(K);}catch(e){}try{sessionStorage.removeItem(K);}catch(e){}location.reload();}
+
+// ── CICLO MENSAL: sempre dia 1 ──
+function getMonthExp(year,month){
+  const now=new Date();
+  const y=(year!=null?year:now.getFullYear());
+  const m=(month!=null?month:now.getMonth());
+  // do dia 1 ao último dia do mês
+  const start=new Date(y,m,1).toISOString().split('T')[0];
+  const end=new Date(y,m+1,0).toISOString().split('T')[0];
+  return(S.exp||[]).filter(e=>e.date&&e.date>=start&&e.date<=end);
+}
+function getCurrMonthKey(){const n=new Date();return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0');}
+
+// ── INIT ──
+(async()=>{
+  await initDB();await ld();
+  buildQStrip();buildCG('catGrid','selCat');setDate();
+  goTo('pgHome');
+  if(!window.navigator.standalone)document.getElementById('ib').classList.add('on');
+  schedNotifs();
+})();
+
+// ── NAV ──
+let curPg='pgHome';
+function goTo(pg){
+  document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));
+  document.getElementById(pg).classList.add('on');
+  ['nHome','nAnalysis','nHistory','nSettings'].forEach(n=>document.getElementById(n).classList.remove('on'));
+  const map={pgHome:'nHome',pgBills:'nBills',pgSavings:'nSavings',pgAnalysis:'nAnalysis',pgHistory:'nHistory',pgSettings:'nSettings'};
+  if(map[pg])document.getElementById(map[pg]).classList.add('on');
+  curPg=pg;
+  if(pg==='pgHome')renderHome();
+  if(pg==='pgBills')renderBillsPage();
+  if(pg==='pgSavings')renderSavings();
+  if(pg==='pgAnalysis')renderAnalysis();
+  if(pg==='pgHistory')renderHistory();
+  if(pg==='pgSettings')renderSettings();
+}
+
+// ── HOME ──
+function renderHome(){
+  const now=new Date(),h=now.getHours();
+  const nm=S.nome||(S.sal?'Marlon':'');
+  document.getElementById('hGreet').textContent=(h<12?'Bom dia':h<18?'Boa tarde':'Boa noite')+(nm?', '+nm:'');
+  const D=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'],M=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  const d=now.getDate();
+  document.getElementById('hDate').textContent=d>=28?'Dia '+d+' 😭':d>=20?'Dia '+d+' ⚡':D[now.getDay()]+', '+d+' de '+M[now.getMonth()];
+
+  const inc=(S.sal||0)+(S.tk||0);
+  const fixT=(S.fixed||[]).reduce((a,f)=>a+f.val,0);
+  const debtT=(S.debts||[]).reduce((a,x)=>a+x.parcela,0);
+  const mE=getMonthExp();
+  const varT=mE.reduce((a,e)=>a+e.val,0);
+  const credT=mE.filter(e=>e.pay==='credit').reduce((a,e)=>a+e.val,0);
+  const foodUsed=mE.filter(e=>e.pay==='food').reduce((a,e)=>a+e.val,0);
+  const foodLeft=Math.max(0,(S.tk||0)-foodUsed);
+  const avail=inc>0?Math.max(0,inc-fixT-debtT-varT):0;
+  const pct=inc>0?Math.min(100,Math.round(((fixT+debtT+varT)/inc)*100)):0;
+  const cls=inc===0?'warn':avail>inc*.3?'ok':avail>0?'warn':'bad';
+
+  // hero
+  document.getElementById('scVal').textContent=inc?'R$ '+fmt(avail):'—';
+  document.getElementById('scVal').className='sc-val '+cls;
+  document.getElementById('scBadge').textContent=inc?pct+'% usado':'Config';
+  document.getElementById('scBadge').className='sc-badge '+(pct<60?'ok':pct<85?'warn':'bad');
+  document.getElementById('scSub').textContent=inc?'de R$ '+fmt(inc)+' de receita':'Configure o salário para começar';
+  document.getElementById('stInc').textContent=inc?'R$ '+fmtK(inc):'—';
+  document.getElementById('stFix').textContent=inc?'R$ '+fmtK(fixT+debtT):'—';
+  document.getElementById('stVar').textContent='R$ '+fmtK(varT);
+  document.getElementById('stVar').className='sc-stat-val '+(varT>0?'amber':'');
+  document.getElementById('credPend').textContent='R$ '+fmtK(credT);
+  document.getElementById('foodUsed').textContent='R$ '+fmtK(foodUsed);
+  document.getElementById('foodSub').textContent=S.tk?'de R$ '+fmt(S.tk)+' de ticket':'configure o ticket';
+  document.getElementById('foodLeft').textContent=S.tk?'R$ '+fmtK(foodLeft):'—';
+  document.getElementById('foodLeft').className='dc-val '+(foodLeft>S.tk*.3||!S.tk?'ok':foodLeft>0?'warn':'bad');
+
+  // progress
+  const pf=document.getElementById('progFill');
+  pf.style.width=pct+'%';pf.className='prog-fill '+(pct<60?'ok':pct<85?'warn':'bad');
+  document.getElementById('progPct').textContent=inc?pct+'%':'—';
+
+  // orçamento diário
+  const dim=new Date(now.getFullYear(),now.getMonth()+1,0).getDate();
+  const dleft=Math.max(1,dim-d+1);
+  const dayB=avail>0&&inc>0?avail/dleft:0;
+  const todayS=now.toISOString().split('T')[0];
+  const todaySpent=mE.filter(e=>e.date===todayS).reduce((a,e)=>a+e.val,0);
+  const dayLeftVal=dayB-todaySpent;
+  document.getElementById('dayLeft').textContent=inc?'R$ '+fmt(Math.max(0,dayLeftVal)):'—';
+  document.getElementById('dayLeft').className='dc-val '+(inc===0?'warn':dayLeftVal>dayB*.5?'ok':dayLeftVal>0?'warn':'bad');
+  document.getElementById('daySub').textContent='Gastou R$ '+fmt(todaySpent)+' hoje';
+
+  // alert
+  const nm=S.nome||'Marlon';
+  const al=document.getElementById('mainAlert');
+  const last=S.lastReg?new Date(S.lastReg):null;
+  const ds=last?Math.floor((Date.now()-last)/86400000):999;
+  if(!inc){al.className='alert info on';document.getElementById('alertIco').textContent='💡';document.getElementById('alertTxt').innerHTML='Salário não configurado. <span onclick="oM(\'mSal\')" style="font-weight:800;text-decoration:underline;cursor:pointer">Configurar →</span>';}
+  else if(ds>=3){al.className='alert bad on';document.getElementById('alertIco').textContent='🕵️';document.getElementById('alertTxt').textContent=`${nm}, ${ds} dias sem registrar. Fugindo das dívidas?`;}
+  else if(pct>=90){al.className='alert bad on';document.getElementById('alertIco').textContent='🚨';document.getElementById('alertTxt').textContent=`${nm}, ${pct}% do orçamento foi. Só R$ ${fmt(avail)} restando. Modo sobrevivência.`;}
+  else if(pct>=70){al.className='alert warn on';document.getElementById('alertIco').textContent='⚡';document.getElementById('alertTxt').textContent=`Modo dublê de rico, ${nm}? ${pct}% consumido. O dia 28 tá te observando.`;}
+  else if(ds===1){al.className='alert info on';document.getElementById('alertIco').textContent='👀';document.getElementById('alertTxt').textContent=`Ê ${nm}, última entrada foi ontem. Registrou tudo hoje?`;}
+  else al.classList.remove('on');
+
+  renderWBars(dayB);renderRecent(mE);renderDebtSec();renderBillsChip();updStreak();
+  document.getElementById('streakN').textContent=S.streak;
+}
+
+function renderWBars(dayB){
+  const now=new Date(),dow=now.getDay(),mE=getMonthExp();
+  const days=['D','S','T','Q','Q','S','S'];let mx=0;const cols=[];
+  for(let i=0;i<7;i++){
+    const dt=new Date(now);dt.setDate(dt.getDate()-(dow-i+7)%7);
+    const ds=dt.toISOString().split('T')[0];
+    const tot=mE.filter(e=>e.date===ds).reduce((a,e)=>a+e.val,0);
+    cols.push({lbl:days[dt.getDay()],tot,isT:ds===now.toISOString().split('T')[0]});
+    if(tot>mx)mx=tot;
+  }
+  document.getElementById('wbars').innerHTML=cols.map(c=>{
+    const h=mx>0?Math.max(c.tot>0?8:0,(c.tot/mx)*100):0;
+    const cls=c.tot===0?'ok':c.tot<=dayB?'ok':c.tot<=dayB*1.3?'warn':'bad';
+    return`<div class="wbar${c.isT?' today':''}"><div class="wbar-track"><div class="wbar-fill ${cls}" style="height:${h}%"></div></div><div class="wbar-lbl">${c.lbl}</div></div>`;
+  }).join('');
+}
+
+function renderRecent(mE){
+  const el=document.getElementById('recentList');
+  const list=[...mE].sort((a,b)=>new Date(b.date)-new Date(a.date)).slice(0,6);
+  if(!list.length){el.innerHTML='<div class="empty"><div class="empty-ico">📭</div><div class="empty-t">Nenhum gasto este mês.<br>Toque em + para registrar.</div></div>';return;}
+  el.innerHTML=list.map(e=>eRow(e,false)).join('');
+}
+
+function eRow(e,showDel,mk){
+  const c=CATS.find(x=>x.id===e.cat)||CATS[7];
+  const p=PAYS[e.pay]||PAYS.pix;
+  const delBtn=showDel?`<span onclick="confAct('Excluir gasto?','${(e.desc||c.lbl).replace(/'/g,"\\'")} — R$ ${fmt(e.val)}',()=>{delExp('${e.id}','${mk||''}')})" style="color:var(--g8);cursor:pointer;font-size:18px;padding:4px;flex-shrink:0">✕</span>`:'';
+  return`<div class="erow">
+    <div class="eico ${e.pay||'pix'}">${c.ico}</div>
+    <div class="einfo">
+      <div class="ename">${e.desc||c.lbl}</div>
+      <div class="emeta"><span class="pay-tag ${e.pay||'pix'}">${p.lbl}</span>${fd(e.date)}</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:6px"><div class="eamt">−R$ ${fmt(e.val)}</div>${delBtn}</div>
+  </div>`;
+}
+
+function renderDebtSec(){
+  const sec=document.getElementById('debtSec');
+  if(!S.debts||!S.debts.length){sec.style.display='none';return;}
+  sec.style.display='block';
+  document.getElementById('debtList').innerHTML=S.debts.map(d=>{
+    const rem=Math.max(0,d.total-d.paid);
+    const pct=d.total>0?Math.min(100,Math.round((d.paid/d.total)*100)):0;
+    return`<div class="drow"><div class="dico">💳</div><div class="dinfo"><div class="dname">${d.name}</div><div class="dsub">R$ ${fmt(rem)} restando · ${pct}% pago</div><div class="dbar"><div class="dbarf" style="width:${pct}%"></div></div></div><div class="dright"><div class="dparc">−R$ ${fmt(d.parcela)}</div><div class="dpct">/mês</div></div></div>`;
+  }).join('');
+}
+
+// ── ANALYSIS ──
+function renderAnalysis(){
+  const mE=getMonthExp();
+  const tot=mE.reduce((a,e)=>a+e.val,0);
+  document.getElementById('aTot').textContent=tot?'R$ '+fmt(tot):'R$ 0,00';
+
+  // por categoria
+  const byCat={};CATS.forEach(c=>{byCat[c.id]=0;});
+  mE.forEach(e=>{if(byCat[e.cat]!==undefined)byCat[e.cat]+=e.val;else byCat['outros']+=e.val;});
+  const sorted=CATS.map(c=>({...c,val:byCat[c.id]})).filter(c=>c.val>0).sort((a,b)=>b.val-a.val);
+  const mx=(sorted[0]?sorted[0].val:1);
+  document.getElementById('aCatList').innerHTML=sorted.length?sorted.map(c=>{
+    const pct=tot>0?Math.round((c.val/tot)*100):0;
+    const circ=Math.round((pct/100)*88);
+    return`<div class="arow">
+      <div class="a-ring">
+        <svg width="38" height="38" viewBox="0 0 38 38"><circle cx="19" cy="19" r="14" fill="none" stroke="var(--g10)" stroke-width="4"/><circle cx="19" cy="19" r="14" fill="none" stroke="var(--g1)" stroke-width="4" stroke-dasharray="${circ} 88" stroke-linecap="round"/></svg>
+        <span class="a-ring-lbl">${pct}%</span>
+      </div>
+      <div class="ainfo"><div class="aname">${c.ico} ${c.lbl}</div><div class="abar"><div class="abarf" style="width:${Math.round((c.val/mx)*100)}%"></div></div></div>
+      <div class="aright"><div class="aamt">R$ ${fmt(c.val)}</div><div class="apct">${pct}% do total</div></div>
+    </div>`;
+  }).join(''):'<div class="empty"><div class="empty-ico">📊</div><div class="empty-t">Nenhum gasto este mês ainda.</div></div>';
+
+  // por forma de pagamento
+  const byPay={pix:0,credit:0,food:0,cash:0};
+  mE.forEach(e=>{if(byPay[e.pay]!==undefined)byPay[e.pay]+=e.val;else byPay.pix+=e.val;});
+  const payItems=[
+    {id:'pix',lbl:'Pix / Débito',ico:'💳'},
+    {id:'credit',lbl:'Cartão Crédito',ico:'💙'},
+    {id:'food',lbl:'Cart. Alimentação',ico:'🟣'},
+    {id:'cash',lbl:'Dinheiro',ico:'💵'},
+  ].filter(p=>byPay[p.id]>0);
+  const pmx=Math.max(...payItems.map(p=>byPay[p.id]),1);
+  document.getElementById('aPayList').innerHTML=payItems.length?payItems.map(p=>{
+    const v=byPay[p.id];const pct=tot>0?Math.round((v/tot)*100):0;
+    return`<div class="arow">
+      <div class="a-ring"><svg width="38" height="38" viewBox="0 0 38 38"><circle cx="19" cy="19" r="14" fill="none" stroke="var(--g10)" stroke-width="4"/><circle cx="19" cy="19" r="14" fill="none" stroke="var(--g1)" stroke-width="4" stroke-dasharray="${Math.round((pct/100)*88)} 88" stroke-linecap="round"/></svg><span class="a-ring-lbl">${pct}%</span></div>
+      <div class="ainfo"><div class="aname">${p.ico} ${p.lbl}</div><div class="abar"><div class="abarf" style="width:${Math.round((v/pmx)*100)}%"></div></div></div>
+      <div class="aright"><div class="aamt">R$ ${fmt(v)}</div><div class="apct">${pct}% do total</div></div>
+    </div>`;
+  }).join(''):'<div class="empty"><div class="empty-ico">💳</div><div class="empty-t">Nenhum gasto registrado.</div></div>';
+}
+
+// ── HISTORY ──
+function renderHistory(){
+  const now=new Date(),MN=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  const mf=document.getElementById('mfilter');mf.innerHTML='';
+  for(let i=5;i>=0;i--){
+    const dt=new Date(now.getFullYear(),now.getMonth()-i,1);
+    const mk=dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0');
+    const p=document.createElement('div');p.className='mpill'+(i===0?' on':'');
+    p.textContent=MN[dt.getMonth()]+' '+dt.getFullYear();
+    p.onclick=()=>{document.querySelectorAll('.mpill').forEach(x=>x.classList.remove('on'));p.classList.add('on');renderHistList(mk,dt.getFullYear(),dt.getMonth());};
+    mf.appendChild(p);
+  }
+  renderHistList(now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0'),now.getFullYear(),now.getMonth());
+}
+
+function renderHistList(mk,y,m){
+  const list=getMonthExp(y,m).sort((a,b)=>new Date(b.date)-new Date(a.date));
+  const tot=list.reduce((a,e)=>a+e.val,0);
+  document.getElementById('histTitle').textContent=list.length?'Total: R$ '+fmt(tot):'Sem gastos';
+  const el=document.getElementById('histList');
+  if(!list.length){el.innerHTML='<div class="empty"><div class="empty-ico">📭</div><div class="empty-t">Nenhum gasto neste mês.</div></div>';return;}
+  el.innerHTML=list.map(e=>eRow(e,true,mk)).join('');
+}
+
+function delExp(id,mk){
+  S.exp=S.exp.filter(e=>e.id!==id);sv();
+  const parts=mk.split('-');
+  renderHistList(mk,parseInt(parts[0]),parseInt(parts[1])-1);
+  toast('🗑️ Removido');if(curPg==='pgHome')renderHome();
+}
+
+// ── SETTINGS ──
+function renderSettings(){
+  document.getElementById('sSalSub').textContent=S.sal?`Salário R$ ${fmt(S.sal)} · Ticket R$ ${fmt(S.tk||0)}`:'Não configurado';
+  const fn=(S.fixed||[]).length,ft=(S.fixed||[]).reduce((a,f)=>a+f.val,0);
+  document.getElementById('sFixSub').textContent=fn?`${fn} item${fn>1?'s':''} · R$ ${fmt(ft)}/mês`:'Nenhum';
+  const dn=(S.debts||[]).length,dt=(S.debts||[]).reduce((a,d)=>a+d.parcela,0);
+  document.getElementById('sDebtSub').textContent=dn?`${dn} dívida${dn>1?'s':''} · R$ ${fmt(dt)}/mês`:'Nenhuma';
+  const active=Object.entries(S.notifs||{}).filter(([,v])=>v).map(([k])=>({almoco:'13h',fim:'20h',manha:'8h'}[k])).join(', ');
+  document.getElementById('sNotifSub').textContent=active||'Nenhum ativo';
+}
+function saveSal(){
+  S.nome=document.getElementById('eNome').value.trim()||S.nome||'';
+  S.sal=parseFloat(document.getElementById('eSal').value)||0;
+  S.tk=parseFloat(document.getElementById('eTk').value)||0;
+  sv();cM('mSal');toast('✅ Salvo!');
+  if(curPg==='pgHome')renderHome();if(curPg==='pgSettings')renderSettings();
+}
+function askReset(){confAct('Limpar tudo?','Todos os dados serão apagados permanentemente.',resetAll);}
+
+// ── BILL STATUS HELPERS ──
+function billStatus(dueDay){
+  // returns {status:'ok'|'soon'|'overdue', daysLeft, label}
+  if(!dueDay) return {status:'ok',daysLeft:99,label:'Sem vencimento'};
+  const now=new Date();
+  const d=now.getDate();
+  const m=now.getMonth();
+  const y=now.getFullYear();
+  // vencimento esse mês
+  let due=new Date(y,m,dueDay);
+  // se já passou, próximo ciclo é mês que vem
+  if(due<now && d>dueDay) due=new Date(y,m+1,dueDay);
+  const daysLeft=Math.ceil((due-now)/86400000);
+  if(daysLeft<0) return{status:'overdue',daysLeft,label:`Atrasado ${Math.abs(daysLeft)}d`};
+  if(daysLeft<=3) return{status:'soon',daysLeft,label:`Vence em ${daysLeft}d`};
+  return{status:'ok',daysLeft,label:`Dia ${dueDay}`};
+}
+
+const STATUS_COLOR={ok:'var(--green)',soon:'var(--amber)',overdue:'var(--red)'};
+const STATUS_BG={ok:'var(--greenl)',soon:'var(--amberl)',overdue:'var(--redl)'};
+
+// ── FIXED ──
+function renderFixed(){
+  const el=document.getElementById('fixedList');
+  if(!(S.fixed||[]).length){
+    el.innerHTML='<div style="text-align:center;padding:10px 0;color:var(--g7);font-size:13px">Nenhum gasto fixo ainda.</div>';return;
+  }
+  el.innerHTML=S.fixed.map(f=>{
+    const bs=billStatus(f.due);
+    const statusDot=`<span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:99px;background:${STATUS_BG[bs.status]};color:${STATUS_COLOR[bs.status]}">${bs.label}</span>`;
+    return`<div class="litem">
+      <span class="lico">${f.ico||'📌'}</span>
+      <div class="linfo">
+        <div class="lname">${f.name}</div>
+        <div class="lval" style="display:flex;align-items:center;gap:6px;margin-top:3px">R$ ${fmt(f.val)}/mês ${statusDot}</div>
+      </div>
+      <button class="ldel" onclick="confAct('Excluir fixo?','${f.name.replace(/'/g,"\\'")}',()=>delFixed('${f.id}'))">🗑️</button>
+    </div>`;
+  }).join('');
+}
+
+function addFixed(){
+  const name=document.getElementById('fName').value.trim();
+  const val=parseFloat(document.getElementById('fVal').value)||0;
+  const due=parseInt(document.getElementById('fDue').value)||0;
+  const ico=document.getElementById('fIco').value.trim()||'📌';
+  if(!name||!val){toast('⚠️ Preencha nome e valor');return;}
+  if(!S.fixed)S.fixed=[];
+  S.fixed.push({id:uid(),name,val,due:due||null,ico});
+  document.getElementById('fName').value='';
+  document.getElementById('fVal').value='';
+  document.getElementById('fDue').value='';
+  document.getElementById('fIco').value='';
+  sv();renderFixed();renderBillsSec();toast('✅ Adicionado');
+  if(curPg==='pgSettings')renderSettings();
+}
+
+function delFixed(id){
+  S.fixed=S.fixed.filter(f=>f.id!==id);
+  sv();renderFixed();renderBillsSec();toast('🗑️ Removido');
+  if(curPg==='pgSettings')renderSettings();
+  if(curPg==='pgHome')renderHome();
+}
+
+// ── BILLS SECTION on HOME ──
+const BILL_SARCASM={
+  overdue:{
+    agua:['Quem precisa de água pra tomar banho, né {n}? Salvo que a conta venceu.','{n} deve água pra companhia. Vai tomar banho seco?','Conta de água atrasada, {n}. Esperança que não vem da torneira.'],
+    luz:['Sem luz não tem Netflix, {n}. Prioridades.','Conta de luz atrasada. {n} vai viver de vela mesmo.','A CEMIG tá com saudade, {n}. E do seu dinheiro.'],
+    internet:['Sem internet, {n}? Como você vai procrastinar pagar as outras contas?','Internet atrasada, {n}. Pelo menos você não vai ver a conta chegar.','Conta da internet vencida. Irônico que você ainda tá aqui, {n}.'],
+    aluguel:['ALUGUEL ATRASADO, {n}? O proprietário já tá ensaiando o aviso de despejo.','Aluguel vencido, {n}. O teto ainda tá aí, mas por quanto tempo?','{n} deve aluguel. É morar de graça ou é morar de fé?'],
+    financiamento:['Financiamento atrasado, {n}. O banco não é seu amigo. Nunca foi.','{n} atrasou o financiamento. A taxa de juros agradece.','{n} deve parcela do financiamento. O imóvel ainda não é seu, lembra?'],
+    cartao:['Cartão de crédito vencido, {n}. Os juros já tão fazendo festa.','{n} atrasou o cartão. A operadora tá feliz. Você não vai estar.','{n}, cartão vencido é o jeito mais caro de não ter dinheiro.'],
+    default:['Conta atrasada, {n}. Essa é a parte favorita do mês do cobrador.','Venceu, {n}. Essa conta não vai embora sozinha.','Ignorando conta vencida, {n}? Ela não tá te ignorando.'],
+  },
+  soon:{
+    default:['Atenção {n}: essa conta vence em breve. Não faz a mesma coisa de todo mês.','{n}, vencimento chegando. Já separou o dinheiro ou vai improvisar de novo?','Alerta de vencimento, {n}. Dessa vez antecipado, diferente de você.'],
+  }
+};
+
+function getBillSarcasm(name,status){
+  const nm=S.nome||'véi';
+  const nl=name.toLowerCase();
+  let pool;
+  if(status==='overdue'){
+    if(nl.match(/agua|gua\b/)) pool=BILL_SARCASM.overdue.agua;
+    else if(nl.match(/\bluz\b|energia|eletrica|cemig/)) pool=BILL_SARCASM.overdue.luz;
+    else if(nl.match(/internet|wifi|fibra|claro|vivo|tim|oi\b/)) pool=BILL_SARCASM.overdue.internet;
+    else if(nl.match(/aluguel|locacao/)) pool=BILL_SARCASM.overdue.aluguel;
+    else if(nl.match(/financiamento|imovel|propria/)) pool=BILL_SARCASM.overdue.financiamento;
+    else if(nl.match(/cartao|credito|nubank|itau|bradesco|santander/)) pool=BILL_SARCASM.overdue.cartao;
+    else pool=BILL_SARCASM.overdue.default;
+  } else {
+    pool=BILL_SARCASM.soon.default;
+  }
+  return pool[Math.floor(Math.random()*pool.length)].replace(/\{n\}/g,nm);
+}
+
+function renderBillsSec(){
+  const sec=document.getElementById('billsSec');
+  const allBills=[
+    ...(S.fixed||[]).filter(f=>f.due).map(f=>({...f,type:'fixed'})),
+    ...(S.debts||[]).filter(d=>d.due).map(d=>({...d,val:d.parcela,type:'debt'})),
+  ];
+  if(!allBills.length){sec.style.display='none';return;}
+
+  const withStatus=allBills.map(b=>({...b,bs:billStatus(b.due)}));
+  withStatus.sort((a,b)=>a.bs.daysLeft-b.bs.daysLeft);
+  const hasUrgent=withStatus.some(b=>b.bs.status!=='ok');
+  sec.style.display='block';
+
+  document.getElementById('billsList').innerHTML=withStatus.map((b,i)=>{
+    const bs=b.bs;
+    const ico=b.ico||(b.type==='debt'?'💳':'📌');
+    const parcLabel=b.type==='debt'&&b.nparc?` · parcela ${Math.max(1,Math.round((b.paid||0)/b.parcela)+1)}/${b.nparc}`:'';
+    const rowBg=bs.status==='overdue'?'background:#FFF0EF':bs.status==='soon'?'background:#FFF4E6':'';
+    const sarcBtn=bs.status!=='ok'
+      ?`<button data-bidx="${i}" class="bill-sarc-btn" style="width:100%;height:34px;background:${STATUS_BG[bs.status]};color:${STATUS_COLOR[bs.status]};border:none;border-radius:8px;font-family:var(--sans);font-size:12px;font-weight:700;cursor:pointer;margin-top:6px">😬 Ver comentário do app</button>`
+      :'';
+    return`<div class="erow" style="${rowBg}">
+      <div class="eico pix" style="background:${STATUS_BG[bs.status]}">${ico}</div>
+      <div class="einfo">
+        <div class="ename">${b.name}${parcLabel}</div>
+        <div class="emeta" style="display:flex;flex-direction:column;gap:3px">
+          <span style="font-size:10px;font-weight:700;color:${STATUS_COLOR[bs.status]}">${bs.label}</span>
+          ${sarcBtn}
+        </div>
+      </div>
+      <div class="eamt" style="color:${STATUS_COLOR[bs.status]}">R$ ${fmt(b.val)}</div>
+    </div>`;
+  }).join('');
+
+  // attach events via JS (safe, no inline onclick with nested quotes)
+  window._billsWithStatus=withStatus;
+  document.querySelectorAll('.bill-sarc-btn').forEach(btn=>{
+    btn.addEventListener('click',function(){
+      const idx=parseInt(this.dataset.bidx);
+      const b=window._billsWithStatus[idx];
+      if(b) showSarcasm(getBillSarcasm(b.name,b.bs.status));
+    });
+  });
+
+  // auto-popup for first overdue
+  if(hasUrgent){
+    const overdue=withStatus.filter(b=>b.bs.status==='overdue');
+    if(overdue.length) setTimeout(()=>showSarcasm(getBillSarcasm(overdue[0].name,'overdue')),800);
+  }
+}
+
+// ── DEBTS ──
+function renderDebtEdit(){
+  const el=document.getElementById('debtEditList');
+  if(!(S.debts||[]).length){el.innerHTML='<div style="text-align:center;padding:10px 0;color:var(--g7);font-size:13px">Nenhuma dívida cadastrada.</div>';return;}
+  el.innerHTML=S.debts.map(d=>{
+    const bs=billStatus(d.due);
+    const paidCount=d.parcela>0?Math.round((d.paid||0)/d.parcela):0;
+    const total=d.nparc||Math.round(d.total/d.parcela)||'?';
+    const statusDot=d.due?`<span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:99px;background:${STATUS_BG[bs.status]};color:${STATUS_COLOR[bs.status]}">${bs.label}</span>`:'';
+    return`<div class="litem">
+      <span class="lico">${d.ico||'💳'}</span>
+      <div class="linfo">
+        <div class="lname">${d.name}</div>
+        <div class="lval" style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:3px">
+          R$ ${fmt(d.parcela)}/mês · ${paidCount}/${total} pagas ${statusDot}
+        </div>
+      </div>
+      <button class="ldel" onclick="confAct('Quitar dívida?','${d.name.replace(/'/g,"\\'")}',()=>delDebt('${d.id}'))">✓</button>
+    </div>`;
+  }).join('');
+}
+
+function addDebt(){
+  const name=document.getElementById('dName').value.trim();
+  const total=parseFloat(document.getElementById('dTotal').value)||0;
+  const parcela=parseFloat(document.getElementById('dParc').value)||0;
+  const due=parseInt(document.getElementById('dDue').value)||null;
+  const nparc=parseInt(document.getElementById('dNparc').value)||null;
+  const ico=document.getElementById('dIco').value.trim()||'💳';
+  if(!name||!total||!parcela){toast('⚠️ Preencha nome, total e parcela');return;}
+  if(!S.debts)S.debts=[];
+  S.debts.push({id:uid(),name,total,parcela,due,nparc,ico,paid:0});
+  ['dName','dTotal','dParc','dDue','dNparc','dIco'].forEach(id=>document.getElementById(id).value='');
+  sv();renderDebtEdit();renderBillsSec();toast('✅ Dívida adicionada');
+  if(curPg==='pgSettings')renderSettings();
+}
+
+function delDebt(id){
+  // mark as paid instead of delete — add value to paid counter first
+  const d=S.debts.find(x=>x.id===id);
+  if(d) d.paid=(d.paid||0)+d.parcela;
+  // if fully paid, remove
+  if(d && d.paid>=d.total) S.debts=S.debts.filter(x=>x.id!==id);
+  sv();renderDebtEdit();renderBillsSec();toast('✅ Parcela registrada!');
+  if(curPg==='pgSettings')renderSettings();
+  if(curPg==='pgHome')renderHome();
+}
+
+// ── NOTIF ──
+function tgN(k){if(!S.notifs)S.notifs={};S.notifs[k]=!S.notifs[k];document.getElementById('n-'+k).classList.toggle('on',S.notifs[k]);sv();schedNotifs();}
+
+// ── EXPENSE ──
+function buildCG(gridId,varName){
+  const cur=varName==='selCat'?selCat:sCat;
+  document.getElementById(gridId).innerHTML=CATS.map(c=>`<div class="cbt${cur===c.id?' on':''}" onclick="pickC('${gridId}','${c.id}','${varName}',this)"><span class="cico">${c.ico}</span><span class="clbl">${c.lbl}</span></div>`).join('');
+}
+function pickC(gId,id,vn,el){if(vn==='selCat')selCat=id;else sCat=id;document.querySelectorAll('#'+gId+' .cbt').forEach(b=>b.classList.remove('on'));el.classList.add('on');}
+function setPay(p){selPay=p;document.querySelectorAll('#paySel .pay-opt').forEach(o=>o.classList.toggle('on',o.dataset.pay===p));}
+function setSPay(p){sPay=p;document.querySelectorAll('#sPaySel .pay-opt').forEach(o=>o.classList.toggle('on',o.dataset.pay===p));}
+function setDate(){const el=document.getElementById('eDate');if(el)el.value=new Date().toISOString().split('T')[0];}
+function buildQStrip(){document.getElementById('qstrip').innerHTML=QUICK.map(q=>`<div class="qbtn" onclick="qAdd('${q.id}','${q.lbl}','${q.pay}')"><span class="qico">${q.ico}</span><span class="qlbl">${q.lbl}</span></div>`).join('');}
+function qAdd(cat,lbl,pay){selCat=cat;selPay=pay||'pix';document.getElementById('eDesc').value=lbl;document.getElementById('eVal').value='';setDate();buildCG('catGrid','selCat');setPay(selPay);oM('mAdd');setTimeout(()=>document.getElementById('eVal').focus(),350);}
+
+function saveExp(){
+  const val=parseFloat(document.getElementById('eVal').value)||0;
+  const desc=document.getElementById('eDesc').value.trim();
+  const date=document.getElementById('eDate').value;
+  if(!val){toast('⚠️ Informe o valor');return;}
+  if(!date){toast('⚠️ Informe a data');return;}
+  if(!S.exp)S.exp=[];
+  S.exp.push({id:uid(),val,desc,cat:selCat,date,pay:selPay});
+  S.lastReg=new Date().toISOString();
+  updStreak();sv();cM('mAdd');
+  const saved={val,desc,cat:selCat,pay:selPay};
+  document.getElementById('eVal').value='';document.getElementById('eDesc').value='';setDate();setPay('pix');
+  if(curPg==='pgHome')renderHome();
+  setTimeout(()=>sarcasmOnSave(saved),300);
+}
+
+// ── STREAK ──
+function updStreak(){
+  const now=new Date(),mk=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
+  S.streak=new Set((S.exp||[]).filter(e=>e.date&&e.date.startsWith(mk)).map(e=>e.date)).size;sv();
+}
+
+// ── SCAN ──
+const GK='AQ.Ab8RN6IZp9_QslyhvIjBdx1WIs9UhItWXs0VBkfYv9sQvc66Tg';
+const GU='https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key='+GK;
+function resetScan(){['scanDrop'].forEach(id=>document.getElementById(id).style.display='block');['scanPreview','scanLoading','scanResult','scanErr'].forEach(id=>document.getElementById(id).style.display='none');document.getElementById('scanInput').value='';sCat='outros';sPay='pix';}
+async function doScan(e){
+  const file=e.target.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=async ev=>{
+    const b64=ev.target.result.split(',')[1],mime=file.type||'image/jpeg';
+    document.getElementById('scanDrop').style.display='none';
+    document.getElementById('scanPreview').style.display='block';
+    document.getElementById('scanImg').src=ev.target.result;
+    document.getElementById('scanLoading').style.display='block';
+    const msgs=[{i:'🔍',t:'Detetive analisando…'},{i:'🧾',t:'Lendo a nota…'},{i:'💸',t:'Achando o valor…'}];
+    let mi=0;const lI=setInterval(()=>{mi=(mi+1)%msgs.length;document.getElementById('sIco').textContent=msgs[mi].i;document.getElementById('sTxt').textContent=msgs[mi].t;},1200);
+    const today=new Date().toISOString().split('T')[0];
+    const prompt=`Analise esta imagem financeira. Responda SOMENTE JSON sem texto extra:\n{"valor":number,"descricao":"string max 40 chars","data":"YYYY-MM-DD default ${today}","categoria":"alimentacao|transporte|mercado|saude|lazer|vestuario|educacao|outros","pagamento":"pix|credit|food|cash","confianca":"alta|media|baixa"}\nSe cartão alimentação/refeição/vale use food. Se sem valor financeiro: {"erro":"mensagem"}`;
+    try{
+      const res=await fetch(GU,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:prompt},{inline_data:{mime_type:mime,data:b64}}]}],generationConfig:{temperature:0.1,maxOutputTokens:300}})});
+      clearInterval(lI);document.getElementById('scanLoading').style.display='none';
+      if(!res.ok)throw new Error('Erro API Gemini');
+      const data=await res.json();
+      const raw=(function(d){try{return d.candidates[0].content.parts[0].text||'';}catch(e){return '';}})(data);
+      const parsed=JSON.parse(raw.replace(/```json|```/g,'').trim());
+      if(parsed.erro){document.getElementById('scanErr').textContent='🤷 '+parsed.erro;document.getElementById('scanErr').style.display='block';document.getElementById('scanDrop').style.display='block';return;}
+      document.getElementById('sVal').value=parsed.valor||'';
+      document.getElementById('sDesc').value=parsed.descricao||'';
+      document.getElementById('sDate').value=parsed.data||today;
+      sCat=parsed.categoria||'outros';sPay=parsed.pagamento||'pix';
+      buildCG('scanCatGrid','sCat');setSPay(sPay);
+      document.getElementById('scanResult').style.display='block';
+      toast(parsed.confianca==='baixa'?'⚠️ Confira os dados':'✅ Dados extraídos!');
+    }catch(err){clearInterval(lI);document.getElementById('scanLoading').style.display='none';document.getElementById('scanErr').textContent='Erro: '+err.message;document.getElementById('scanErr').style.display='block';document.getElementById('scanDrop').style.display='block';}
+  };reader.readAsDataURL(file);
+}
+function saveScan(){
+  const val=parseFloat(document.getElementById('sVal').value)||0,desc=document.getElementById('sDesc').value.trim(),date=document.getElementById('sDate').value;
+  if(!val){toast('⚠️ Informe o valor');return;}
+  if(!S.exp)S.exp=[];
+  S.exp.push({id:uid(),val,desc,cat:sCat,date,pay:sPay});
+  S.lastReg=new Date().toISOString();updStreak();sv();cM('mScan');resetScan();
+  const saved={val,desc,cat:sCat,pay:sPay};
+  if(curPg==='pgHome')renderHome();
+  setTimeout(()=>sarcasmOnSave(saved),300);
+}
+
+// ── NOTIFS ──
+function schedNotifs(){if(!('Notification'in window))return;if(Notification.permission==='default')Notification.requestPermission();const times={almoco:{h:13,m:0},fim:{h:20,m:0},manha:{h:8,m:0}};Object.entries(times).forEach(([k,t])=>{if(!(S.notifs||{})[k])return;const now=new Date(),tgt=new Date();tgt.setHours(t.h,t.m,0,0);if(tgt<=now)tgt.setDate(tgt.getDate()+1);setTimeout(()=>{if(Notification.permission==='granted'){const last=S.lastReg?new Date(S.lastReg):null;const d=last?Math.floor((Date.now()-last)/86400000):999;new Notification('Cadê Meu Dinheiro, Marlon? 🕵️',{body:d>=2?`${d} dias sem registrar!`:k==='almoco'?'☀️ Registrou os gastos do almoço?':k==='fim'?'🌙 Não esquece de hoje!':'🌅 Como foram os gastos de ontem?'});}schedNotifs();},tgt-now);});}
+
+// ── STREAK MODAL ──
+function openStreak(){const s=S.streak;document.getElementById('streakBig').textContent=s;const msgs=['Comece hoje! 💪','Tá começando! Continue. 🌱','Virando hábito! 🔥','Uma semana! 🚀','Mês inteiro! Você não chora mais no dia 28! 👑'];document.getElementById('streakMsg').textContent=s===0?msgs[0]:s<=2?msgs[1]:s<=5?msgs[2]:s<20?msgs[3]:msgs[4];}
+
+// ── MODAL ──
+function oM(id){
+  if(id==='mSal'){document.getElementById('eNome').value=S.nome||'';document.getElementById('eSal').value=S.sal||'';document.getElementById('eTk').value=S.tk||'';}
+  if(id==='mEmergencia'){document.getElementById('emerCur').value=(S.emer?S.emer.cur:'');document.getElementById('emerGoal').value=(S.emer?S.emer.goal:'');document.getElementById('emerTip').textContent='R$ '+fmt((S.sal||0)*6);}
+  if(id==='mDepEmer'){document.getElementById('dEmerVal').value='';document.getElementById('dEmerDate').value=new Date().toISOString().split('T')[0];document.getElementById('dEmerDesc').value='';}
+  if(id==='mNewGoal'){document.getElementById('gName').value='';document.getElementById('gIco').value='';document.getElementById('gTarget').value='';document.getElementById('gInitial').value='';}
+  if(id==='mFixed')renderFixed();
+  if(id==='mDebts')renderDebtEdit();
+  if(id==='mNotif')['almoco','fim','manha'].forEach(k=>document.getElementById('n-'+k).classList.toggle('on',!!(S.notifs||{})[k]));
+  if(id==='mStreak')openStreak();
+  if(id==='mAdd'){buildCG('catGrid','selCat');setDate();setPay('pix');}
+  if(id==='mScan')resetScan();
+  if(id==='mVoice'){resetVoice();}
+  if(id==='mPayBill'){document.getElementById('payBillVal').value='';}
+  document.getElementById(id).classList.add('on');
+}
+function cM(id){document.getElementById(id).classList.remove('on');}
+document.querySelectorAll('.ov').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('on');}));
+function confAct(title,body,cb){document.getElementById('ct').textContent=title;document.getElementById('cb').textContent=body;document.getElementById('cok').onclick=()=>{cConf();cb&&cb();};document.getElementById('cov').classList.add('on');}
+function cConf(){document.getElementById('cov').classList.remove('on');}
+document.getElementById('cov').addEventListener('click',e=>{if(e.target===document.getElementById('cov'))cConf();});
+
+// ── SAVINGS ──
+function renderSavings(){
+  if(!S.emer)S.emer={cur:0,goal:0,deposits:[]};
+  if(!S.goals)S.goals=[];
+
+  // emergência hero
+  const ec=S.emer.cur||0,eg=S.emer.goal||0;
+  const epct=eg>0?Math.min(100,Math.round((ec/eg)*100)):0;
+  document.getElementById('emerVal').textContent='R$ '+fmt(ec);
+  document.getElementById('emerSub').textContent=eg?'Meta: R$ '+fmt(eg)+' · '+epct+'% atingido':'Toque em Configurar para definir uma meta';
+  document.getElementById('emerPct').textContent=epct+'%';
+  document.getElementById('emerFill').style.width=epct+'%';
+
+  // depósitos emergência (últimos 5)
+  const deps=(S.emer.deposits||[]).slice().reverse().slice(0,5);
+  const el=document.getElementById('emerDepList');
+  if(!deps.length){el.innerHTML='<div class="empty" style="padding:16px"><div class="empty-ico" style="font-size:24px">💰</div><div class="empty-t" style="font-size:12px">Nenhum depósito ainda.<br>Toque em + para depositar.</div></div>';
+  }else{
+    el.innerHTML='<div style="padding:0 16px">'+deps.map(d=>`
+      <div class="dep-row">
+        <div class="dep-ico">💰</div>
+        <div class="dep-info"><div class="dep-name">${d.desc||'Depósito'}</div><div class="dep-date">${fd(d.date)}</div></div>
+        <div class="dep-amt">+R$ ${fmt(d.val)}</div>
+      </div>`).join('')+'</div>';
+  }
+  // botão depositar na emergência
+  const emerSec=document.getElementById('emerDepList');
+  emerSec.insertAdjacentHTML('afterend',
+    `<div style="padding:0 16px 4px"><button onclick="oM('mDepEmer')" style="width:100%;height:40px;background:#E5F7FA;color:#30B0C7;border:none;border-radius:10px;font-family:var(--sans);font-size:13px;font-weight:800;cursor:pointer;margin-top:8px">+ Depositar na emergência</button></div>`
+  );
+
+  // metas
+  const gl=document.getElementById('goalsList');
+  if(!S.goals.length){
+    gl.innerHTML='<div class="empty"><div class="empty-ico">🎯</div><div class="empty-t">Nenhuma meta criada.<br>Toque em "Nova meta +" para começar.</div></div>';
+    return;
+  }
+  gl.innerHTML=S.goals.map(g=>{
+    const cur=g.cur||0,tgt=g.target||0;
+    const pct=tgt>0?Math.min(100,Math.round((cur/tgt)*100)):0;
+    const recentDeps=(g.deposits||[]).slice().reverse().slice(0,3);
+    return`<div class="goal-card">
+      <div class="goal-hdr">
+        <div class="goal-ico">${g.ico||'🎯'}</div>
+        <div class="goal-hdr-info">
+          <div class="goal-name">${g.name}</div>
+          <div class="goal-sub">Meta: R$ ${fmt(tgt)}</div>
+        </div>
+        <div class="goal-actions">
+          <button class="goal-btn goal-btn-dep" onclick="openDepGoal('${g.id}')">+</button>
+          <button class="goal-btn goal-btn-del" onclick="confAct('Excluir meta?','${g.name.replace(/'/g,"\\'")} — R$ ${fmt(cur)} guardado',()=>delGoal('${g.id}'))">🗑️</button>
+        </div>
+      </div>
+      <div class="goal-prow">
+        <div class="goal-cur">R$ ${fmt(cur)}</div>
+        <div class="goal-target">de R$ ${fmt(tgt)}</div>
+      </div>
+      <div class="goal-track"><div class="goal-fill" style="width:${pct}%"></div></div>
+      <div class="goal-pct">${pct}% concluído${pct>=100?' 🎉':tgt>0?' · faltam R$ '+fmt(Math.max(0,tgt-cur)):''}</div>
+      ${recentDeps.length?'<div style="margin-top:10px;border-top:1px solid var(--g11);padding-top:4px">'+recentDeps.map(d=>`<div class="dep-row"><div class="dep-ico">💰</div><div class="dep-info"><div class="dep-name">${d.desc||'Depósito'}</div><div class="dep-date">${fd(d.date)}</div></div><div class="dep-amt">+R$ ${fmt(d.val)}</div></div>`).join('')+'</div>':''}
+    </div>`;
+  }).join('');
+}
+
+function saveEmer(){
+  if(!S.emer)S.emer={cur:0,goal:0,deposits:[]};
+  S.emer.cur=parseFloat(document.getElementById('emerCur').value)||0;
+  S.emer.goal=parseFloat(document.getElementById('emerGoal').value)||0;
+  sv();cM('mEmergencia');toast('✅ Reserva atualizada!');
+  if(curPg==='pgSavings')renderSavings();
+}
+
+function depositEmer(){
+  const val=parseFloat(document.getElementById('dEmerVal').value)||0;
+  const date=document.getElementById('dEmerDate').value;
+  const desc=document.getElementById('dEmerDesc').value.trim();
+  if(!val){toast('⚠️ Informe o valor');return;}
+  if(!S.emer)S.emer={cur:0,goal:0,deposits:[]};
+  if(!S.emer.deposits)S.emer.deposits=[];
+  S.emer.cur=(S.emer.cur||0)+val;
+  S.emer.deposits.push({id:uid(),val,date:date||new Date().toISOString().split('T')[0],desc});
+  sv();cM('mDepEmer');toast('✅ R$ '+fmt(val)+' guardado!');
+  document.getElementById('dEmerVal').value='';document.getElementById('dEmerDesc').value='';
+  // re-render (limpa botão duplicado antes)
+  const extraBtn=document.querySelector('#emerDepList + div');
+  if(extraBtn)extraBtn.remove();
+  if(curPg==='pgSavings')renderSavings();
+}
+
+function saveGoal(){
+  const name=document.getElementById('gName').value.trim();
+  const target=parseFloat(document.getElementById('gTarget').value)||0;
+  const initial=parseFloat(document.getElementById('gInitial').value)||0;
+  const ico=document.getElementById('gIco').value.trim()||'🎯';
+  if(!name){toast('⚠️ Informe o nome');return;}
+  if(!target){toast('⚠️ Informe o valor alvo');return;}
+  if(!S.goals)S.goals=[];
+  S.goals.push({id:uid(),name,ico,target,cur:initial,deposits:initial>0?[{id:uid(),val:initial,date:new Date().toISOString().split('T')[0],desc:'Saldo inicial'}]:[]});
+  document.getElementById('gName').value='';document.getElementById('gIco').value='';document.getElementById('gTarget').value='';document.getElementById('gInitial').value='';
+  sv();cM('mNewGoal');toast('✅ Meta criada!');
+  if(curPg==='pgSavings')renderSavings();
+}
+
+function openDepGoal(id){
+  const g=S.goals.find(x=>x.id===id);if(!g)return;
+  document.getElementById('depGoalId').value=id;
+  document.getElementById('mDepGoalTitle').textContent='💰 Depositar em: '+g.name;
+  document.getElementById('dGoalVal').value='';
+  document.getElementById('dGoalDate').value=new Date().toISOString().split('T')[0];
+  document.getElementById('dGoalDesc').value='';
+  document.getElementById('mDepGoal').classList.add('on');
+}
+
+function depositGoal(){
+  const id=document.getElementById('depGoalId').value;
+  const val=parseFloat(document.getElementById('dGoalVal').value)||0;
+  const date=document.getElementById('dGoalDate').value;
+  const desc=document.getElementById('dGoalDesc').value.trim();
+  if(!val){toast('⚠️ Informe o valor');return;}
+  const g=S.goals.find(x=>x.id===id);if(!g)return;
+  if(!g.deposits)g.deposits=[];
+  g.cur=(g.cur||0)+val;
+  g.deposits.push({id:uid(),val,date:date||new Date().toISOString().split('T')[0],desc});
+  sv();cM('mDepGoal');toast('✅ R$ '+fmt(val)+' guardado!');
+  if(g.cur>=g.target)toast('🎉 Meta atingida! Parabéns!');
+  const extraBtn=document.querySelector('#emerDepList + div');
+  if(extraBtn)extraBtn.remove();
+  if(curPg==='pgSavings')renderSavings();
+}
+
+function delGoal(id){
+  S.goals=S.goals.filter(g=>g.id!==id);sv();toast('🗑️ Meta removida');
+  const extraBtn=document.querySelector('#emerDepList + div');
+  if(extraBtn)extraBtn.remove();
+  if(curPg==='pgSavings')renderSavings();
+}
+
+// ── VOICE ──
+let recognition=null,vPay='pix',vCat='outros';
+
+function resetVoice(){
+  ['voiceListening','voiceProcessing','voiceResult','voiceError'].forEach(id=>document.getElementById(id).style.display='none');
+  document.getElementById('voiceIdle').style.display='block';
+  if(recognition)try{recognition.stop();}catch(e){}
+}
+
+function voiceState(s){
+  ['voiceIdle','voiceListening','voiceProcessing','voiceResult','voiceError'].forEach(id=>document.getElementById(id).style.display='none');
+  document.getElementById(s).style.display='block';
+}
+
+function startVoice(){
+  if(!('webkitSpeechRecognition' in window||'SpeechRecognition' in window)){
+    voiceState('voiceError');
+    document.getElementById('voiceError').textContent='⚠️ Seu navegador não suporta reconhecimento de voz. Use o Safari no iPhone.';
+    return;
+  }
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  recognition=new SR();
+  recognition.lang='pt-BR';
+  recognition.continuous=false;
+  recognition.interimResults=true;
+  recognition.maxAlternatives=1;
+
+  voiceState('voiceListening');
+  document.getElementById('voiceTranscript').textContent='';
+
+  recognition.onresult=e=>{
+    const transcript=Array.from(e.results).map(r=>r[0].transcript).join('');
+    document.getElementById('voiceTranscript').textContent=transcript;
+    if(e.results[e.results.length-1].isFinal) processVoice(transcript);
+  };
+  recognition.onerror=e=>{
+    voiceState('voiceError');
+    document.getElementById('voiceError').textContent='Erro no microfone: '+(e.error==='not-allowed'?'Permissão negada. Permita o microfone no Safari.':e.error)+'\n\nTente novamente.';
+  };
+  recognition.onend=()=>{
+    const t=document.getElementById('voiceTranscript').textContent;
+    if(t&&document.getElementById('voiceListening').style.display!=='none') processVoice(t);
+  };
+  recognition.start();
+}
+
+function stopVoice(){
+  if(recognition)try{recognition.stop();}catch(e){}
+}
+
+async function processVoice(transcript){
+  voiceState('voiceProcessing');
+  const msgs=[{i:'🧠',t:'Interpretando…'},{i:'💡',t:'Extraindo valor…'},{i:'🏷️',t:'Categorizando…'}];
+  let mi=0;const lI=setInterval(()=>{mi=(mi+1)%msgs.length;document.getElementById('voiceProcIco').textContent=msgs[mi].i;},1200);
+
+  const today=new Date().toISOString().split('T')[0];
+  const prompt=`O usuário disse: "${transcript}"
+Extraia as informações de gasto e responda SOMENTE JSON válido sem texto extra:
+{"valor":number,"descricao":"string max 40 chars","categoria":"alimentacao|transporte|mercado|saude|lazer|vestuario|educacao|outros","pagamento":"pix|credit|food|cash","confianca":"alta|media|baixa"}
+
+Regras de pagamento:
+- "alimentação", "ticket", "vale", "refeição", "cartão alimentação" → food
+- "crédito", "cartão de crédito" → credit
+- "dinheiro", "espécie" → cash
+- padrão → pix
+
+Se não entender o valor, retorne: {"erro":"Não entendi o valor. Tente novamente."}`;
+
+  try{
+    const res=await fetch(GU,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{temperature:0.1,maxOutputTokens:200}})});
+    clearInterval(lI);
+    if(!res.ok)throw new Error('Erro API');
+    const data=await res.json();
+    const raw=(function(d){try{return d.candidates[0].content.parts[0].text||'';}catch(e){return '';}})(data);
+    const parsed=JSON.parse(raw.replace(/```json|```/g,'').trim());
+
+    if(parsed.erro){
+      voiceState('voiceError');
+      document.getElementById('voiceError').textContent='🎤 '+parsed.erro;
+      return;
+    }
+
+    vCat=parsed.categoria||'outros';
+    vPay=parsed.pagamento||'pix';
+    document.getElementById('vVal').value=parsed.valor||'';
+    document.getElementById('vDesc').value=parsed.descricao||'';
+    buildCG('vCatGrid','vCat');
+    setVPay(vPay);
+    voiceState('voiceResult');
+    if(parsed.confianca==='baixa') toast('⚠️ Confira os dados — não ficou muito claro');
+
+  }catch(err){
+    clearInterval(lI);
+    voiceState('voiceError');
+    document.getElementById('voiceError').textContent='Erro ao processar: '+err.message+'\n\nTente falar novamente.';
+  }
+}
+
+function setVPay(p){vPay=p;document.querySelectorAll('#vPaySel .pay-opt').forEach(o=>o.classList.toggle('on',o.dataset.pay===p));}
+
+function saveVoiceExp(){
+  const val=parseFloat(document.getElementById('vVal').value)||0;
+  const desc=document.getElementById('vDesc').value.trim();
+  if(!val){toast('⚠️ Informe o valor');return;}
+  if(!S.exp)S.exp=[];
+  S.exp.push({id:uid(),val,desc,cat:vCat,date:new Date().toISOString().split('T')[0],pay:vPay});
+  S.lastReg=new Date().toISOString();
+  updStreak();sv();cM('mVoice');resetVoice();
+  const saved={val,desc,cat:vCat,pay:vPay};
+  if(curPg==='pgHome')renderHome();
+  setTimeout(()=>sarcasmOnSave(saved),300);
+}
+
+// ── SARCASM ENGINE 😈 ──
+function n(){return S.nome||'véi';}
+
+const FRASES={
+  acimaDia:[
+    'Modo dublê de rico ativado, {n}? 🤡',
+    'Ê {n}, tá achando que é rico? Spoiler: não é.',
+    '{n} gastando mais do que ganha. Clássico.',
+    'Você ultrapassou o orçamento do dia, {n}. Parabéns pelo feito.',
+    'Tá bom {n}, vamo fingir que isso não aconteceu né.',
+    '{n} no modo: o dinheiro existe pra ser gasto. Tomara que o boleto não exista também.',
+    'Alguém avisa {n} que orçamento não é sugestão?',
+    '{n}, você tem orçamento, não tem? Então usa, pelo amor.',
+  ],
+  critico:[
+    '{n}, sobrou quase nada. O mês ainda nem acabou. 🫠',
+    'Modo sobrevivência ativado, {n}. Água e boleto só.',
+    '{n} chegou em 90% do orçamento. O dia 28 já tá sorrindo.',
+    'Parabéns {n}, você quebrou mais rápido que o costume.',
+    '{n} tá no limite. Tipo, literalmente no limite.',
+  ],
+  moradia:[
+    'Pronto {n}, aluguel pago. Agora você tem um teto pra passar fome.',
+    'Parabéns {n}, mais um mês sem morar na rua. Meta cumprida.',
+    '{n} pagou o aluguel. O proprietário agradece. Seu bolso chora.',
+    'Teto garantido, {n}. Comida é detalhe, né?',
+    'Aluguel pago, {n}. Agora é só sobreviver com o que sobrou.',
+    '{n} manteve o endereço por mais um mês. Progresso.',
+  ],
+  transporte:[
+    '{n}, você tá fazendo frete pra gastar isso tudo com combustível?',
+    'Combustível pago, {n}. Seu carro agradece. Sua conta chora.',
+    '{n} abasteceu. A Petrobras também agradece.',
+    'Isso é combustível ou você tá bancando a OPEP inteira, {n}?',
+    '{n} gastou com transporte. Pergunta: tá indo trabalhar ou fugindo das dívidas?',
+    'Com esse combustível todo, {n}, você tá rodando ou girando em falso?',
+  ],
+  alimentacaoTicket:[
+    '{n} usando o ticket. Enquanto durar, né.',
+    'Ticket alimentação bem usado, {n}. Pelo menos esse não sai do bolso (por enquanto).',
+    '{n} comendo com o dinheiro da empresa. Esperteza ou necessidade? As duas.',
+    'Ticket voando, {n}. No mínimo vai passar fome com estilo.',
+  ],
+  alimentacao:[
+    '{n} comendo. Pelo menos esse gasto tem justificativa.',
+    'Alimentação registrada, {n}. Corpo agradece. Saldo nem tanto.',
+    '{n} se alimentou. Necessidade básica. Continue assim.',
+  ],
+  lazer:[
+    '{n} gastando com lazer. Interessante decisão pra quem tá no limite.',
+    'Lazer, {n}? Com esse saldo? Audacioso.',
+    '{n} foi se divertir. O boleto também vai se divertir no dia 5.',
+    'Curte enquanto pode, {n}. O dia 28 não curte com você.',
+    '{n} investindo em felicidade. Que o banco não liga pra isso é detalhe.',
+  ],
+  saude:[
+    '{n} gastou com saúde. Único gasto que não dá pra zoar. Vai lá.',
+    'Saúde primeiro, {n}. O resto a gente resolve depois (ou não).',
+    '{n} cuidando do corpo. Pelo menos uma parte tá em dia.',
+  ],
+  vestuario:[
+    '{n} comprando roupa. Pra ir trabalhar pagar mais conta? Faz sentido.',
+    'Novo visual, {n}? Seu guarda-roupa agradece. Seu saldo nem tanto.',
+    '{n} renovando o armário. Quem precisa de comida quando tem estilo, né?',
+    'Roupa nova, {n}. Tá arrumado pro próximo momento de chorar no extrato.',
+  ],
+  educacao:[
+    '{n} investindo em conhecimento. O único gasto que pode virar dinheiro de volta.',
+    'Estudando, {n}? Isso sim é gasto com futuro. Continua.',
+    '{n} pagou curso. Agora só falta usar o que aprender.',
+  ],
+  credito:[
+    '{n} no crédito. Você sabe que isso vai cobrar juros se não pagar, né?',
+    'Crédito usado, {n}. O banco agradece. Você vai agradecer menos no vencimento.',
+    '{n} parcelando o presente pra pagar com o salário futuro. Planejamento financeiro avançado.',
+    'Mais crédito, {n}? Tá bem. O banco tá feliz. Você já sabe como isso termina.',
+  ],
+  primeiroDia:[
+    'Bom dia, {n}! Começou gastando. Consistente pelo menos.',
+    'Primeiro gasto do dia registrado, {n}. O dia mal começou.',
+    '{n} acordou e já foi gastar. Disposição não falta.',
+    'Dia novo, gasto novo, {n}. A tradição continua.',
+  ],
+  gastoAlto:[
+    '{n}, você gastou {val} de uma vez. Coragem.',
+    'Isso é um gasto ou um investimento em falência, {n}?',
+    '{val} numa tacada, {n}? O mês tem mais dias pra viver, sabia?',
+    '{n} foi pesado. {val}. Esse app vai precisar de suporte emocional.',
+  ],
+  voltou:[
+    '{n} voltou! Achamos que tinha fugido das dívidas.',
+    'Ah, {n} se lembrou que tem um app financeiro. Bem-vindo de volta ao mundo real.',
+    '{n} apareceu. O dinheiro foi embora enquanto você sumia, sabia?',
+    '{n} sumiu e agora voltou. O extrato não sumiu junto, infelizmente.',
+  ],
+  salvo:[
+    'Registrado, {n}. Pelo menos você sabe onde foi.',
+    'Anotado, {n}. A consciência agradece. O saldo nem tanto.',
+    '{n} registrou. Metade do controle financeiro é isso. A outra metade é não gastar mais.',
+    'Salvo, {n}. Continua assim e talvez você chegue ao dia 30 vivo.',
+    'Registrado com sucesso, {n}. O app tá aqui. O dinheiro... nem sempre.',
+  ],
+};
+
+function pick(arr){return arr[Math.floor(Math.random()*arr.length)];}
+
+function sarcast(key,val){
+  const nm=S.nome||'véi';
+  let f=pick(FRASES[key]||FRASES.salvo);
+  return f.replace(/\{n\}/g,nm).replace(/\{val\}/g,'R$ '+fmt(val||0));
+}
+
+function sarcasmOnSave(expense){
+  const nm=S.nome||'véi';
+  const mE=getMonthExp();
+  const inc=(S.sal||0)+(S.tk||0);
+  const varT=mE.reduce((a,e)=>a+e.val,0);
+  const avail=inc>0?Math.max(0,inc-(S.fixed||[]).reduce((a,f)=>a+f.val,0)-(S.debts||[]).reduce((a,d)=>a+d.parcela,0)-varT):0;
+  const pct=inc>0?Math.min(100,Math.round((varT/inc)*100)):0;
+  const todayS=new Date().toISOString().split('T')[0];
+  const todayExp=mE.filter(e=>e.date===todayS);
+  const isFirst=todayExp.length===1; // acabou de salvar o primeiro do dia
+  const dayB=avail>0&&inc>0?avail/Math.max(1,new Date(new Date().getFullYear(),new Date().getMonth()+1,0).getDate()-new Date().getDate()+1):0;
+  const todayTotal=todayExp.reduce((a,e)=>a+e.val,0);
+  const last=S.lastReg?new Date(S.lastReg):null;
+  const daysSince=last?Math.floor((Date.now()-last)/86400000):0;
+  const isHighVal=inc>0&&expense.val>inc*.25;
+
+  let key='salvo';
+
+  // prioridade: voltou sumido
+  if(daysSince>=3){key='voltou';}
+  // gasto muito alto
+  else if(isHighVal){key='gastoAlto';}
+  // primeiro do dia
+  else if(isFirst){key='primeiroDia';}
+  // por categoria
+  else if(expense.cat==='outros'&&(expense.desc||'').toLowerCase().match(/aluguel|prestacao|condominio|moradia|casa|apartamento|financiamento/)){key='moradia';}
+  else if(expense.cat==='transporte'){key='transporte';}
+  else if(expense.cat==='alimentacao'||expense.cat==='mercado'){key=expense.pay==='food'?'alimentacaoTicket':'alimentacao';}
+  else if(expense.cat==='lazer'&&pct>60){key='lazer';}
+  else if(expense.cat==='saude'){key='saude';}
+  else if(expense.cat==='vestuario'){key='vestuario';}
+  else if(expense.cat==='educacao'){key='educacao';}
+  else if(expense.pay==='credit'){key='credito';}
+
+  // verifica se estourou o dia
+  if(dayB>0&&todayTotal>dayB*1.1&&key==='salvo'){key='acimaDia';}
+
+  showSarcasm(sarcast(key,expense.val));
+}
+
+function showSarcasm(msg){
+  // modal de sarcasmo no-mercy
+  let el=document.getElementById('sarcasmModal');
+  if(!el){
+    el=document.createElement('div');
+    el.id='sarcasmModal';
+    el.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:500;display:flex;align-items:flex-end;opacity:0;transition:opacity .2s;pointer-events:none';
+    el.innerHTML=`<div id="sarcasmBox" style="width:100%;background:#1C1C1E;border-radius:24px 24px 0 0;padding:20px 20px calc(28px + var(--sb));transform:translateY(100%);transition:transform .3s cubic-bezier(.32,.72,0,1)">
+      <div style="width:32px;height:4px;background:#3A3A3C;border-radius:2px;margin:0 auto 18px"></div>
+      <div style="font-size:26px;margin-bottom:10px;text-align:center" id="sarcasmIco">😂</div>
+      <div id="sarcasmTxt" style="font-size:16px;font-weight:700;color:#fff;text-align:center;line-height:1.5;margin-bottom:20px"></div>
+      <button onclick="closeSarcasm()" style="width:100%;height:48px;background:#fff;color:#000;border:none;border-radius:14px;font-family:var(--sans);font-size:15px;font-weight:800;cursor:pointer">Ok, entendi 😅</button>
+    </div>`;
+    el.addEventListener('click',e=>{if(e.target===el)closeSarcasm();});
+    document.body.appendChild(el);
+  }
+  // pick emoji baseado no tom
+  const icos=['😂','💀','🫠','😭','🤡','😬','💸','🙃','🥲','😩'];
+  document.getElementById('sarcasmIco').textContent=icos[Math.floor(Math.random()*icos.length)];
+  document.getElementById('sarcasmTxt').textContent=msg;
+  el.style.pointerEvents='all';
+  requestAnimationFrame(()=>{
+    el.style.opacity='1';
+    document.getElementById('sarcasmBox').style.transform='translateY(0)';
+  });
+}
+
+function closeSarcasm(){
+  const el=document.getElementById('sarcasmModal');
+  if(!el)return;
+  el.style.opacity='0';
+  document.getElementById('sarcasmBox').style.transform='translateY(100%)';
+  setTimeout(()=>{el.style.pointerEvents='none';},300);
+}
+
+// ── BILL PAYMENT SYSTEM ──
+
+// Get current month key YYYY-MM
+function monthKey(){const n=new Date();return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0');}
+
+// Get payment record for a bill this month
+function getBillPayment(billId){
+  const mk=monthKey();
+  return (S.billPayments||[]).find(p=>p.billId===billId&&p.month===mk)||null;
+}
+
+// Get effective status for a bill
+function getBillStatus(bill){
+  const pay=getBillPayment(bill.id);
+  if(pay){
+    if(pay.status==='paid') return 'paid';
+    if(pay.status==='scheduled') return 'scheduled';
+  }
+  const bs=billStatus(bill.due);
+  return bs.status; // 'ok'=pending, 'soon', 'overdue'
+}
+
+const STATUS_META={
+  paid:     {label:'✅ Pago',      cls:'paid',      bg:'#E8F8ED', color:'#059669'},
+  scheduled:{label:'🔵 Agendado',  cls:'scheduled', bg:'#EBF4FF', color:'#1D4ED8'},
+  soon:     {label:'🟡 Vence logo', cls:'soon',      bg:'#FFF4E6', color:'#B45309'},
+  overdue:  {label:'🔴 Atrasada',  cls:'overdue',   bg:'#FFF0EF', color:'#DC2626'},
+  ok:       {label:'⚪ Pendente',  cls:'pending',   bg:'#F2F2F7', color:'#636366'},
+};
+
+// Build all bills (fixed + debts with due date)
+function getAllBills(){
+  const fixed=(S.fixed||[]).filter(f=>f.due).map(f=>({...f,_type:'fixed',_val:f.val}));
+  const debts=(S.debts||[]).filter(d=>d.due).map(d=>({...d,_type:'debt',_val:d.parcela}));
+  return [...fixed,...debts].sort((a,b)=>(a.due||0)-(b.due||0));
+}
+
+// ── RENDER BILLS PAGE ──
+function renderBillsPage(){
+  const now=new Date();
+  const MN=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  document.getElementById('billsMonth').textContent=MN[now.getMonth()]+' '+now.getFullYear();
+
+  const bills=getAllBills();
+  let paid=0,pend=0,over=0,sched=0,totalPaid=0,totalExp=0;
+
+  bills.forEach(b=>{
+    const st=getBillStatus(b);
+    const pay=getBillPayment(b.id);
+    totalExp+=b._val;
+    if(st==='paid'){paid++;totalPaid+=((pay&&pay.valReal?pay.valReal:b._val));}
+    else if(st==='scheduled') sched++;
+    else if(st==='overdue') over++;
+    else pend++;
+  });
+
+  document.getElementById('bSum-paid').textContent=paid;
+  document.getElementById('bSum-pend').textContent=pend;
+  document.getElementById('bSum-over').textContent=over;
+  document.getElementById('bSum-sched').textContent=sched;
+  document.getElementById('bTotalPaid').textContent='R$ '+fmt(totalPaid);
+  document.getElementById('bTotalExpected').textContent='R$ '+fmt(totalExp);
+
+  if(!bills.length){
+    document.getElementById('fullBillsList').innerHTML='<div class="empty"><div class="empty-ico">📋</div><div class="empty-t">Nenhuma conta com data de vencimento.<br>Vá em Config → Gastos Fixos para adicionar.</div></div>';
+    return;
+  }
+
+  document.getElementById('fullBillsList').innerHTML=bills.map((b,i)=>{
+    const st=getBillStatus(b);
+    const meta=STATUS_META[st]||STATUS_META.ok;
+    const pay=getBillPayment(b.id);
+    const ico=b.ico||(b._type==='debt'?'💳':'📌');
+    const dueLabel=b.due?'Vence dia '+b.due:'Sem data';
+    const valReal=(pay&&pay.valReal?pay.valReal:b._val);
+    const diff=pay?pay.valReal-b._val:0;
+    const diffHtml=pay&&Math.abs(diff)>0.01
+      ?`<span class="diff-warn ${diff>0?'over':'under'}">${diff>0?'+':''}R$ ${fmt(diff)}</span>`:'';
+
+    const actPay=st!=='paid'
+      ?`<button class="bill-act-btn bill-act-pay" data-bid="${b.id}" data-btype="${b._type}" onclick="openPayBill('${b.id}','${b._type}')">✅ Marcar como pago</button>`:'';
+    const actSched=st==='ok'||st==='pending'
+      ?`<button class="bill-act-btn bill-act-sched" data-bid="${b.id}" onclick="schedBill('${b.id}')">🔵 Agendar</button>`:'';
+    const actUnpay=st==='paid'||st==='scheduled'
+      ?`<button class="bill-act-btn bill-act-unpay" data-bid="${b.id}" onclick="unPayBill('${b.id}')">↩ Desfazer</button>`:'';
+
+    const paidInfo=pay&&st==='paid'
+      ?`<div class="bill-paid-info">Pago em ${fd(pay.date)} via ${(PAYS[pay.pay]?PAYS[pay.pay].lbl:'Pix')} · R$ ${fmt(pay.valReal)}${diffHtml}${pay.obs?` · "${pay.obs}"`:''}</div>`:'';
+
+    return`<div class="bill-card">
+      <div class="bill-status-bar ${meta.cls}"></div>
+      <div class="bill-card-hdr">
+        <div class="bill-ico" style="background:${meta.bg}">${ico}</div>
+        <div class="bill-info">
+          <div class="bill-name">${b.name}</div>
+          <div class="bill-meta">${dueLabel}${b._type==='debt'&&b.nparc?' · parcela '+(Math.round((b.paid||0)/b.parcela)+1)+'/'+b.nparc:''}</div>
+        </div>
+        <div class="bill-right">
+          <div class="bill-badge ${meta.cls}">${meta.label}</div>
+          <div class="bill-val">R$ ${fmt(b._val)}</div>
+          ${st==='paid'&&Math.abs(diff)>0.01?`<div class="bill-val-real" style="color:${diff>0?'var(--red)':'var(--green)'}">Real: R$ ${fmt(valReal)}</div>`:''}
+        </div>
+      </div>
+      ${paidInfo}
+      <div class="bill-actions">
+        ${actPay}${actSched}${actUnpay}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── OPEN PAY BILL MODAL ──
+let payBillPayMethod='pix';
+function openPayBill(id,type){
+  const bill=[...(S.fixed||[]),...(S.debts||[])].find(b=>b.id===id);
+  if(!bill)return;
+  document.getElementById('payBillId').value=id;
+  document.getElementById('payBillType').value=type;
+  document.getElementById('mPayBillTitle').textContent='Pagar: '+bill.name;
+  const val=type==='debt'?bill.parcela:bill.val;
+  document.getElementById('payBillEstimated').textContent='R$ '+fmt(val);
+  document.getElementById('payBillVal').value=val;
+  document.getElementById('payBillDate').value=new Date().toISOString().split('T')[0];
+  document.getElementById('payBillObs').value='';
+  payBillPayMethod='pix';
+  document.querySelectorAll('#payBillPaySel .pay-opt').forEach(o=>o.classList.toggle('on',o.dataset.pay==='pix'));
+  document.getElementById('mPayBill').classList.add('on');
+}
+
+function setPayBillPay(p){
+  payBillPayMethod=p;
+  document.querySelectorAll('#payBillPaySel .pay-opt').forEach(o=>o.classList.toggle('on',o.dataset.pay===p));
+}
+
+function confirmPayBill(){
+  const id=document.getElementById('payBillId').value;
+  const type=document.getElementById('payBillType').value;
+  const valReal=parseFloat(document.getElementById('payBillVal').value)||0;
+  const date=document.getElementById('payBillDate').value;
+  const obs=document.getElementById('payBillObs').value.trim();
+  if(!valReal){toast('⚠️ Informe o valor pago');return;}
+
+  const bill=[...(S.fixed||[]),...(S.debts||[])].find(b=>b.id===id);
+  if(!bill){toast('Conta não encontrada');return;}
+
+  const estimated=type==='debt'?bill.parcela:bill.val;
+  const diff=valReal-estimated;
+  const mk=monthKey();
+
+  // Remove existing payment for this bill this month
+  S.billPayments=(S.billPayments||[]).filter(p=>!(p.billId===id&&p.month===mk));
+
+  // Add new payment record
+  S.billPayments.push({id:uid(),billId:id,month:mk,status:'paid',valReal,date,pay:payBillPayMethod,obs,diff});
+
+  // If value differs from estimate, register the difference as expense adjustment
+  if(Math.abs(diff)>0.01&&diff>0){
+    // Paid more than expected — register difference as extra expense
+    if(!S.exp)S.exp=[];
+    S.exp.push({id:uid(),val:diff,desc:'Diferença: '+bill.name,cat:'outros',date,pay:payBillPayMethod,_billAdj:true});
+    S.lastReg=new Date().toISOString();
+    toast('✅ Pago! +R$ '+fmt(diff)+' de diferença registrado no saldo.');
+  } else if(Math.abs(diff)>0.01&&diff<0){
+    toast('✅ Pago! Você economizou R$ '+fmt(Math.abs(diff))+' em relação ao estimado.');
+    // Negative diff = paid less, update fixed val for next month? No — just note.
+  } else {
+    toast('✅ Conta marcada como paga!');
+  }
+
+  // If it's a debt, register parcela paid
+  if(type==='debt'){
+    const d=S.debts.find(x=>x.id===id);
+    if(d){d.paid=(d.paid||0)+valReal;if(d.paid>=d.total){S.debts=S.debts.filter(x=>x.id!==id);toast('🎉 Dívida quitada!');}}
+  }
+
+  sv();cM('mPayBill');updStreak();
+  if(curPg==='pgBills')renderBillsPage();
+  if(curPg==='pgHome')renderHome();
+  // sarcasm
+  setTimeout(()=>showSarcasm(sarcast('moradia',valReal)),400);
+}
+
+function schedBill(id){
+  const mk=monthKey();
+  S.billPayments=(S.billPayments||[]).filter(p=>!(p.billId===id&&p.month===mk));
+  S.billPayments.push({id:uid(),billId:id,month:mk,status:'scheduled',date:new Date().toISOString().split('T')[0]});
+  sv();toast('🔵 Agendado!');
+  if(curPg==='pgBills')renderBillsPage();
+  renderBillsChip();
+}
+
+function unPayBill(id){
+  const mk=monthKey();
+  S.billPayments=(S.billPayments||[]).filter(p=>!(p.billId===id&&p.month===mk));
+  sv();toast('↩ Desfeito');
+  if(curPg==='pgBills')renderBillsPage();
+  renderBillsChip();
+}
+
+// ── BILLS CHIP on HOME ──
+function renderBillsChip(){
+  const bills=getAllBills();
+  if(!bills.length){document.getElementById('billsChip').style.display='none';return;}
+  document.getElementById('billsChip').style.display='block';
+
+  let paid=0,pend=0,over=0,sched=0;
+  bills.forEach(b=>{
+    const st=getBillStatus(b);
+    if(st==='paid') paid++;
+    else if(st==='scheduled') sched++;
+    else if(st==='overdue') over++;
+    else pend++;
+  });
+
+  const cp=document.getElementById('billChipPaid');
+  const cpe=document.getElementById('billChipPend');
+  const co=document.getElementById('billChipOver');
+
+  cp.style.display=paid?'':'none';cp.textContent='✅ '+paid+' paga'+(paid>1?'s':'');
+  cpe.style.display=(pend+sched)?'':'none';cpe.textContent='⏳ '+(pend+sched)+' pendente'+(pend+sched>1?'s':'');
+  co.style.display=over?'':'none';co.textContent='🔴 '+over+' atrasada'+(over>1?'s':'');
+
+  // auto-reset on new month (day 1)
+  const now=new Date();
+  if(now.getDate()===1){
+    const lastReset=S._lastBillReset;
+    if(lastReset!==monthKey()){
+      S.billPayments=(S.billPayments||[]).filter(p=>p.month===monthKey());
+      S._lastBillReset=monthKey();
+      sv();
+    }
+  }
+}
+
+// ── HELPERS ──
+function fmt(n){return Number(n).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});}
+function fmtK(n){return n>=1000?(n/1000).toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1})+'k':fmt(n);}
+function fd(d){if(!d)return'';const[y,m,day]=d.split('-');return`${day}/${m}/${y}`;}
+let _tt;function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('on');clearTimeout(_tt);_tt=setTimeout(()=>t.classList.remove('on'),2400);}
+
+// ── SIRI SHORTCUT: abre pelo hash #voz ──
+window.addEventListener('load',()=>{
+  if(location.hash==='#voz'){
+    history.replaceState(null,'',location.pathname);
+    setTimeout(()=>oM('mVoice'),600);
+  }
+  if(location.hash==='#gasto'){
+    history.replaceState(null,'',location.pathname);
+    setTimeout(()=>oM('mAdd'),600);
+  }
+});
+
+// ── ERRO VISÍVEL (debug Safari) ──
+window.onerror=function(msg,src,line){
+  const d=document.createElement('div');
+  d.style.cssText='position:fixed;bottom:80px;left:10px;right:10px;background:#fff;color:#c00;border:2px solid #c00;border-radius:12px;padding:12px;font-size:12px;font-family:monospace;z-index:9999;word-break:break-all;box-shadow:0 4px 20px rgba(0,0,0,.3)';
+  d.textContent='JS ERRO linha '+line+': '+msg;
+  document.body.appendChild(d);
+  setTimeout(()=>d.remove(),15000);
+  return false;
+};
+window.addEventListener('unhandledrejection',function(e){
+  const d=document.createElement('div');
+  d.style.cssText='position:fixed;bottom:80px;left:10px;right:10px;background:#fff;color:#c00;border:2px solid #c00;border-radius:12px;padding:12px;font-size:12px;font-family:monospace;z-index:9999;word-break:break-all';
+  d.textContent='PROMISE ERR: '+((e.reason&&e.reason.message?e.reason.message:(e.reason||'unknown')));
+  document.body.appendChild(d);
+  setTimeout(()=>d.remove(),15000);
+});
+</script>
+</body>
+</html>
